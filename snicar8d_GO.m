@@ -52,9 +52,13 @@ function data_out = snicar8d_GO(BND_TYP_IN, DIRECT_IN, APRX_TYP_IN, ...
                              mss_cnc_sot1_in, mss_cnc_sot2_in, ...
                              mss_cnc_dst1_in, mss_cnc_dst2_in, ...
                              mss_cnc_dst3_in, mss_cnc_dst4_in, ...
+                             mss_cnc_GRISdst1_in, mss_cnc_GRISdst2_in,mss_cnc_GRISdst3_in,mss_cnc_GRISdst4_in,mss_cnc_GRISdst5_in,mss_cnc_GRISdst6_in,mss_cnc_GRISdst7_in,mss_cnc_GRISdst8_in, ...
+                             mss_cnc_GRISdst9_in,mss_cnc_GRISdst10_in,mss_cnc_GRISdst11_in,mss_cnc_GRISdst12_in,mss_cnc_GRISdst13_in,mss_cnc_GRISdst14_in,mss_cnc_GRISdst15_in, ...
                              mss_cnc_ash1_in,mss_cnc_bio1_in, mss_cnc_bio2_in,mss_cnc_bio3_in,mss_cnc_bio4_in,mss_cnc_bio5_in, mss_cnc_bio6_in, mss_cnc_bio7_in, mss_cnc_RBio1_in, mss_cnc_hematite_in, mss_cnc_mixed_sand_in, fl_sot1_in, fl_sot2_in, ...
-                             fl_dst1_in, fl_dst2_in, fl_dst3_in, ...
-                             fl_dst4_in, fl_ash1_in,fl_bio1_in,fl_bio2_in,fl_bio3_in,fl_bio4_in, fl_bio5_in,fl_bio6_in, fl_bio7_in, fl_RBio1_in, fl_hematite_in, fl_mixed_sand_in);
+                             fl_dst1_in, fl_dst2_in, fl_dst3_in, fl_dst4_in, ...
+                             fl_GRISdst1_in,fl_GRISdst2_in,fl_GRISdst3_in,fl_GRISdst4_in,fl_GRISdst5_in,fl_GRISdst6_in,fl_GRISdst7_in,fl_GRISdst8_in,fl_GRISdst9_in,fl_GRISdst10_in,fl_GRISdst11_in,fl_GRISdst12_in,fl_GRISdst13_in,...
+                             fl_GRISdst14_in,fl_GRISdst15_in,...
+                             fl_ash1_in,fl_bio1_in,fl_bio2_in,fl_bio3_in,fl_bio4_in, fl_bio5_in,fl_bio6_in, fl_bio7_in, fl_RBio1_in, fl_hematite_in, fl_mixed_sand_in);
 
     
 
@@ -82,7 +86,24 @@ mss_cnc_sot2  = mss_cnc_sot2_in;
 mss_cnc_dst1  = mss_cnc_dst1_in;  
 mss_cnc_dst2  = mss_cnc_dst2_in;  
 mss_cnc_dst3  = mss_cnc_dst3_in;  
-mss_cnc_dst4  = mss_cnc_dst4_in;  
+mss_cnc_dst4  = mss_cnc_dst4_in; 
+
+mss_cnc_GRISdst1 = mss_cnc_GRISdst1_in;
+mss_cnc_GRISdst2 = mss_cnc_GRISdst2_in;
+mss_cnc_GRISdst3 = mss_cnc_GRISdst3_in;
+mss_cnc_GRISdst4 = mss_cnc_GRISdst4_in;
+mss_cnc_GRISdst5 = mss_cnc_GRISdst5_in;
+mss_cnc_GRISdst6 = mss_cnc_GRISdst6_in;
+mss_cnc_GRISdst7 = mss_cnc_GRISdst7_in;
+mss_cnc_GRISdst8 = mss_cnc_GRISdst8_in;
+mss_cnc_GRISdst9 = mss_cnc_GRISdst9_in;
+mss_cnc_GRISdst10 = mss_cnc_GRISdst10_in;
+mss_cnc_GRISdst11 = mss_cnc_GRISdst11_in;
+mss_cnc_GRISdst12 = mss_cnc_GRISdst12_in;
+mss_cnc_GRISdst13 = mss_cnc_GRISdst13_in;
+mss_cnc_GRISdst14 = mss_cnc_GRISdst14_in;
+mss_cnc_GRISdst15 = mss_cnc_GRISdst15_in;
+
 mss_cnc_ash1  = mss_cnc_ash1_in;  
 mss_cnc_bio1  = mss_cnc_bio1_in;   % JC EDIT
 mss_cnc_bio2  = mss_cnc_bio2_in;   % JC EDIT
@@ -101,6 +122,23 @@ fl_dst1       = fl_dst1_in;
 fl_dst2       = fl_dst2_in;
 fl_dst3       = fl_dst3_in;
 fl_dst4       = fl_dst4_in;
+
+fl_GRISdst1       = fl_GRISdst1_in;
+fl_GRISdst2       = fl_GRISdst2_in;
+fl_GRISdst3       = fl_GRISdst3_in;
+fl_GRISdst4       = fl_GRISdst4_in;
+fl_GRISdst5       = fl_GRISdst5_in;
+fl_GRISdst6       = fl_GRISdst6_in;
+fl_GRISdst7       = fl_GRISdst7_in;
+fl_GRISdst8       = fl_GRISdst8_in;
+fl_GRISdst9       = fl_GRISdst9_in;
+fl_GRISdst10       = fl_GRISdst10_in;
+fl_GRISdst11       = fl_GRISdst11_in;
+fl_GRISdst12       = fl_GRISdst12_in;
+fl_GRISdst13       = fl_GRISdst13_in;
+fl_GRISdst14       = fl_GRISdst14_in;
+fl_GRISdst15       = fl_GRISdst15_in;
+
 fl_ash1       = fl_ash1_in;
 fl_bio1       = fl_bio1_in;   % JC EDIT
 fl_bio2       = fl_bio2_in;   % JC EDIT
@@ -257,17 +295,32 @@ fl_in3 = strcat(wrkdir,fl_dst1);
 fl_in4 = strcat(wrkdir,fl_dst2);
 fl_in5 = strcat(wrkdir,fl_dst3);
 fl_in6 = strcat(wrkdir,fl_dst4);
-fl_in7 = strcat(wrkdir,fl_ash1);
-fl_in8 = strcat(wrkdir,fl_bio1); % JC EDIT
-fl_in9 = strcat(wrkdir,fl_bio2); % JC EDIT
-fl_in10 = strcat(wrkdir,fl_bio3); % JC EDIT
-fl_in11 = strcat(wrkdir,fl_bio4); % JC EDIT
-fl_in12 = strcat(wrkdir,fl_bio5); % JC EDIT
-fl_in13 = strcat(wrkdir,fl_bio6); % JC EDIT
-fl_in14 = strcat(wrkdir,fl_bio7); % JC EDIT
-fl_in15 = strcat(wrkdir,fl_RBio1); % JC EDIT
-fl_in16 = strcat(wrkdir,fl_hematite); % JC EDIT
-fl_in17 = strcat(wrkdir,fl_mixed_sand); % JEC EDIT
+fl_in7 = strcat(wrkdir,fl_GRISdst1);
+fl_in8 = strcat(wrkdir,fl_GRISdst2);
+fl_in9 = strcat(wrkdir,fl_GRISdst3);
+fl_in10 = strcat(wrkdir,fl_GRISdst4);
+fl_in11 = strcat(wrkdir,fl_GRISdst5);
+fl_in12 = strcat(wrkdir,fl_GRISdst6);
+fl_in13 = strcat(wrkdir,fl_GRISdst7);
+fl_in14 = strcat(wrkdir,fl_GRISdst8);
+fl_in15 = strcat(wrkdir,fl_GRISdst9);
+fl_in16 = strcat(wrkdir,fl_GRISdst10);
+fl_in17 = strcat(wrkdir,fl_GRISdst11);
+fl_in18 = strcat(wrkdir,fl_GRISdst12);
+fl_in19 = strcat(wrkdir,fl_GRISdst13);
+fl_in20 = strcat(wrkdir,fl_GRISdst14);
+fl_in21 = strcat(wrkdir,fl_GRISdst15);
+fl_in22 = strcat(wrkdir,fl_ash1);
+fl_in23 = strcat(wrkdir,fl_bio1); % JC EDIT
+fl_in24 = strcat(wrkdir,fl_bio2); % JC EDIT
+fl_in25 = strcat(wrkdir,fl_bio3); % JC EDIT
+fl_in26 = strcat(wrkdir,fl_bio4); % JC EDIT
+fl_in27 = strcat(wrkdir,fl_bio5); % JC EDIT
+fl_in28 = strcat(wrkdir,fl_bio6); % JC EDIT
+fl_in29 = strcat(wrkdir,fl_bio7); % JC EDIT
+fl_in30 = strcat(wrkdir,fl_RBio1); % JC EDIT
+fl_in31 = strcat(wrkdir,fl_hematite); % JC EDIT
+fl_in32 = strcat(wrkdir,fl_mixed_sand); % JEC EDIT
 
 
 omega_aer(:,1)       = ncread(fl_in1,'ss_alb');
@@ -339,6 +392,69 @@ omega_aer(:,17)       = ncread(fl_in17,'ss_alb');   % JC EDIT
 g_aer(:,17)           = ncread(fl_in17,'asm_prm');   % JC EDIT
 ext_cff_mss_aer(:,17) = ncread(fl_in17,'ext_cff_mss');   % JC EDIT
 
+omega_aer(:,18)       = ncread(fl_in18,'ss_alb');   % JC EDIT
+g_aer(:,18)           = ncread(fl_in18,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,18) = ncread(fl_in18,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,19)       = ncread(fl_in19,'ss_alb');   % JC EDIT
+g_aer(:,19)           = ncread(fl_in19,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,19) = ncread(fl_in19,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,20)       = ncread(fl_in20,'ss_alb');   % JC EDIT
+g_aer(:,20)           = ncread(fl_in20,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,20) = ncread(fl_in20,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,21)       = ncread(fl_in21,'ss_alb');   % JC EDIT
+g_aer(:,21)           = ncread(fl_in21,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,21) = ncread(fl_in21,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,22)       = ncread(fl_in22,'ss_alb');   % JC EDIT
+g_aer(:,22)           = ncread(fl_in22,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,22) = ncread(fl_in22,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,23)       = ncread(fl_in23,'ss_alb');   % JC EDIT
+g_aer(:,23)           = ncread(fl_in23,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,23) = ncread(fl_in23,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,24)       = ncread(fl_in24,'ss_alb');   % JC EDIT
+g_aer(:,24)           = ncread(fl_in24,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,24) = ncread(fl_in24,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,25)       = ncread(fl_in25,'ss_alb');   % JC EDIT
+g_aer(:,25)           = ncread(fl_in25,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,25) = ncread(fl_in25,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,26)       = ncread(fl_in26,'ss_alb');   % JC EDIT
+g_aer(:,26)           = ncread(fl_in26,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,26) = ncread(fl_in26,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,27)       = ncread(fl_in27,'ss_alb');   % JC EDIT
+g_aer(:,27)           = ncread(fl_in27,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,27) = ncread(fl_in27,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,28)       = ncread(fl_in28,'ss_alb');   % JC EDIT
+g_aer(:,28)           = ncread(fl_in28,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,28) = ncread(fl_in28,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,29)       = ncread(fl_in29,'ss_alb');   % JC EDIT
+g_aer(:,29)           = ncread(fl_in29,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,29) = ncread(fl_in29,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,30)       = ncread(fl_in30,'ss_alb');   % JC EDIT
+g_aer(:,30)           = ncread(fl_in30,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,30) = ncread(fl_in30,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,31)       = ncread(fl_in31,'ss_alb');   % JC EDIT
+g_aer(:,31)           = ncread(fl_in31,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,31) = ncread(fl_in31,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,32)       = ncread(fl_in32,'ss_alb');   % JC EDIT
+g_aer(:,32)           = ncread(fl_in32,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,32) = ncread(fl_in32,'ext_cff_mss');   % JC EDIT
+
+
+
+
 % Set aerosol concentration matrix:
 mss_cnc_aer(1:nbr_lyr,1) = mss_cnc_sot1;
 mss_cnc_aer(1:nbr_lyr,2) = mss_cnc_sot2;
@@ -346,17 +462,34 @@ mss_cnc_aer(1:nbr_lyr,3) = mss_cnc_dst1;
 mss_cnc_aer(1:nbr_lyr,4) = mss_cnc_dst2;
 mss_cnc_aer(1:nbr_lyr,5) = mss_cnc_dst3;
 mss_cnc_aer(1:nbr_lyr,6) = mss_cnc_dst4;
-mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_ash1;
-mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_bio1; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_bio2; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_bio3; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_bio4; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,12) = mss_cnc_bio5; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,13) = mss_cnc_bio6; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,14) = mss_cnc_bio7; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,15) = mss_cnc_RBio1; %JC EDIT
-mss_cnc_aer(1:nbr_lyr,16) = mss_cnc_hematite; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,17) = mss_cnc_mixed_sand; % JC EDIT
+
+mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_GRISdst1;
+mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdst2;
+mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_GRISdst3;
+mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_GRISdst4;
+mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_GRISdst5;
+mss_cnc_aer(1:nbr_lyr,12) = mss_cnc_GRISdst6;
+mss_cnc_aer(1:nbr_lyr,13) = mss_cnc_GRISdst7;
+mss_cnc_aer(1:nbr_lyr,14) = mss_cnc_GRISdst8;
+mss_cnc_aer(1:nbr_lyr,15) = mss_cnc_GRISdst9;
+mss_cnc_aer(1:nbr_lyr,16) = mss_cnc_GRISdst10;
+mss_cnc_aer(1:nbr_lyr,17) = mss_cnc_GRISdst11;
+mss_cnc_aer(1:nbr_lyr,18) = mss_cnc_GRISdst12;
+mss_cnc_aer(1:nbr_lyr,19) = mss_cnc_GRISdst13;
+mss_cnc_aer(1:nbr_lyr,20) = mss_cnc_GRISdst14;
+mss_cnc_aer(1:nbr_lyr,21) = mss_cnc_GRISdst15;
+
+mss_cnc_aer(1:nbr_lyr,22) = mss_cnc_ash1;
+mss_cnc_aer(1:nbr_lyr,23) = mss_cnc_bio1; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,24) = mss_cnc_bio2; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,25) = mss_cnc_bio3; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,26) = mss_cnc_bio4; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,27) = mss_cnc_bio5; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,28) = mss_cnc_bio6; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,29) = mss_cnc_bio7; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,30) = mss_cnc_RBio1; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,31) = mss_cnc_hematite; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,32) = mss_cnc_mixed_sand; % JC EDIT
 
 
 % convert to units of kg/kg:
