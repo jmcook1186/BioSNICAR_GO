@@ -91,11 +91,11 @@ function data_out = snicar8d_GO(BND_TYP_IN, DIRECT_IN, APRX_TYP_IN, ...
                              mss_cnc_dst3_in, mss_cnc_dst4_in, ...
                              mss_cnc_GRISdst1_in, mss_cnc_GRISdst2_in,mss_cnc_GRISdst3_in,mss_cnc_GRISdst4_in,mss_cnc_GRISdst5_in,mss_cnc_GRISdst6_in,mss_cnc_GRISdst7_in,mss_cnc_GRISdst8_in, ...
                              mss_cnc_GRISdst9_in,mss_cnc_GRISdst10_in,mss_cnc_GRISdst11_in,mss_cnc_GRISdst12_in,mss_cnc_GRISdst13_in,mss_cnc_GRISdst14_in,mss_cnc_GRISdst15_in, ...
-                             mss_cnc_ash1_in,mss_cnc_bio1_in, mss_cnc_bio2_in,mss_cnc_bio3_in,mss_cnc_bio4_in,mss_cnc_bio5_in, mss_cnc_bio6_in, mss_cnc_bio7_in, mss_cnc_RBio1_in, mss_cnc_hematite_in, mss_cnc_mixed_sand_in, fl_sot1_in, fl_sot2_in, ...
+                             mss_cnc_ash1_in,mss_cnc_bio1_in, mss_cnc_bio2_in,mss_cnc_bio3_in,mss_cnc_bio4_in,mss_cnc_bio5_in, mss_cnc_bio6_in, mss_cnc_bio7_in, mss_cnc_ancyl_in, mss_cnc_hematite_in, mss_cnc_mixed_sand_in, fl_sot1_in, fl_sot2_in, ...
                              fl_dst1_in, fl_dst2_in, fl_dst3_in, fl_dst4_in, ...
                              fl_GRISdst1_in,fl_GRISdst2_in,fl_GRISdst3_in,fl_GRISdst4_in,fl_GRISdst5_in,fl_GRISdst6_in,fl_GRISdst7_in,fl_GRISdst8_in,fl_GRISdst9_in,fl_GRISdst10_in,fl_GRISdst11_in,fl_GRISdst12_in,fl_GRISdst13_in,...
                              fl_GRISdst14_in,fl_GRISdst15_in,...
-                             fl_ash1_in,fl_bio1_in,fl_bio2_in,fl_bio3_in,fl_bio4_in, fl_bio5_in,fl_bio6_in, fl_bio7_in, fl_RBio1_in, fl_hematite_in, fl_mixed_sand_in);
+                             fl_ash1_in,fl_bio1_in,fl_bio2_in,fl_bio3_in,fl_bio4_in, fl_bio5_in,fl_bio6_in, fl_bio7_in, fl_ancyl_in, fl_hematite_in, fl_mixed_sand_in);
 
 
 % routine has been called from external function, with needed
@@ -147,7 +147,7 @@ mss_cnc_bio4  = mss_cnc_bio4_in;   % JC EDIT
 mss_cnc_bio5  = mss_cnc_bio5_in;   % JC EDIT
 mss_cnc_bio6  = mss_cnc_bio6_in;   % JC EDIT
 mss_cnc_bio7  = mss_cnc_bio7_in;   % JC EDIT
-mss_cnc_RBio1 = mss_cnc_RBio1_in; % JC EDIT
+mss_cnc_ancyl = mss_cnc_ancyl_in; % JC EDIT
 mss_cnc_hematite = mss_cnc_hematite_in;   % JC EDIT
 mss_cnc_mixed_sand = mss_cnc_mixed_sand_in; % JC EDIT
 
@@ -182,7 +182,7 @@ fl_bio4       = fl_bio4_in;   % JC EDIT
 fl_bio5       = fl_bio5_in;   % JC EDIT
 fl_bio6       = fl_bio6_in;   % JC EDIT
 fl_bio7       = fl_bio7_in;   % JC EDIT
-fl_RBio1      = fl_RBio1_in; % JC EDIT
+fl_ancyl      = fl_ancyl_in; % JC EDIT
 fl_hematite   = fl_hematite_in;   % JC EDIT
 fl_mixed_sand = fl_mixed_sand_in; % JC EDIT
 
@@ -315,7 +315,7 @@ fl_in26 = strcat(wrkdir,fl_bio4); % JC EDIT
 fl_in27 = strcat(wrkdir,fl_bio5); % JC EDIT
 fl_in28 = strcat(wrkdir,fl_bio6); % JC EDIT
 fl_in29 = strcat(wrkdir,fl_bio7); % JC EDIT
-fl_in30 = strcat(wrkdir,fl_RBio1); % JC EDIT
+fl_in30 = strcat(fl_ancyl); % JC EDIT
 fl_in31 = strcat(wrkdir,fl_hematite); % JC EDIT
 fl_in32 = strcat(wrkdir,fl_mixed_sand); % JEC EDIT
 
@@ -483,7 +483,7 @@ mss_cnc_aer(1:nbr_lyr,26) = mss_cnc_bio4; % JC EDIT
 mss_cnc_aer(1:nbr_lyr,27) = mss_cnc_bio5; % JC EDIT
 mss_cnc_aer(1:nbr_lyr,28) = mss_cnc_bio6; % JC EDIT
 mss_cnc_aer(1:nbr_lyr,29) = mss_cnc_bio7; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,30) = mss_cnc_RBio1; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,30) = mss_cnc_ancyl; %JC EDIT
 mss_cnc_aer(1:nbr_lyr,31) = mss_cnc_hematite; % JC EDIT
 mss_cnc_aer(1:nbr_lyr,32) = mss_cnc_mixed_sand; % JC EDIT
 

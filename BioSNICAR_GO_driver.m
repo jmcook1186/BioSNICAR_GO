@@ -24,6 +24,15 @@
 % surface area and apotherm of the hexagonal ice grains are calculated and
 % reported to the command window.
 
+% From July 2018 BioSNICAR_GO also uses the geometrical optics
+% approximation to determine the optical properties of glacier algae,
+% assuming them to be cylinders of dimensions defined in this driver. The
+% user simply defines the radius and length of the desired glacier algal
+% cell to retrieve the optical properties from a library populated using a
+% python model (Algae_GO.py). The refractive indexes are determined using
+% the BiOSNICAR mixing model (updated July 2018) from values measured in
+% the field on the Black and Bloom project (SW GrIS).
+
 %%%%%%%%%%  Input parameters: %%%%%%%%%%%
 
 % BND_TYP:      Spectral grid (=1 for 470 bands. This is the
@@ -57,10 +66,8 @@
 clear;
 
 
-
 %%%%%%%%%%%%%%%%%%% USER DEFNED INPUTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 % RADIATIVE TRANSFER CONFIGURATION:
@@ -71,12 +78,12 @@ DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.50;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.005 0.3 0.5 0.5 0.5];
+dz       = [0.005 0.2 0.2 0.2 0.2];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
-R_sfc    = 0.15;
+R_sfc    = 0.1;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
 rho_snw(1:nbr_lyr) = [600, 600, 600, 600, 600]; 
@@ -84,19 +91,29 @@ rho_snw(1:nbr_lyr) = [600, 600, 600, 600, 600];
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
 % size, choose GeometricOptics
-Mie = 1;
-GeometricOptics = 0;
+Mie = 0;
+GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
 rds_snw = [1000,1000,1000,1000,1000];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [10000,10000,20000,30000,30000]; 
-depth(1:nbr_lyr) = [10000,10000,20000,30000,30000];
+side_length(1:nbr_lyr) = [20000,20000,30000,20000,30000]; 
+depth(1:nbr_lyr) = [20000,20000,30000,20000,30000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 32;
+
+% CHOOSE GLACIER ALGAE DIMENSIONS
+algae_r = 8; % algae radius
+algae_l = 20; % algae length
+wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
+
+stb1 = 'algae_geom_'; %name stub 1
+stb2 = '.nc';  % file extansion
+ancyl = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create filename string
+
 
 % LOOP FOR LAP MASS MIXING RATIOS IN ICE
 for x = [200000]   % for reference: 1e3 = 1ug/g (1000 ppb or 1 ppm)
@@ -137,19 +154,14 @@ mss_cnc_bio4(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 4
 mss_cnc_bio5(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 5
 mss_cnc_bio6(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 6
 mss_cnc_bio7(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 7
-mss_cnc_RBio1(1:nbr_lyr) = [0,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
+mss_cnc_ancyl(1:nbr_lyr) = [1e6,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
 mss_cnc_hematite(1:nbr_lyr) = [0,0,0,0,0];   % hematite
 mss_cnc_mixed_sand(1:nbr_lyr) = [0,0,0,0,0];  % mixed sand
 
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
 
 
@@ -185,9 +197,10 @@ fl_bio4  = 'biological_4.nc'; % Biological impurity 4 (30um diameter, 1.5%chll a
 fl_bio5  = 'biological_5.nc'; % Biological impurity 5 (10um diameter, pigs as per bio2)
 fl_bio6  = 'biological_6.nc'; % Biological impurity 6 (50um diameter, pigs as per bio2)
 fl_bio7  = 'biological_7.nc'; % Biological impurity 7 (20um diameter, pigs as per bio2)
-fl_RBio1 = 'Real_Bio_1.nc'; % Biological impurity with measured pigments (inc purpurogallin), 20 micron diam
+fl_ancyl = ancyl; % Biological impurity with measured pigments (inc purpurogallin), 20 micron diam
 fl_hematite  = 'Hematite.nc'; % Hematite particles
 fl_mixed_sand  = 'Mixed_Sand.nc'; % Mixed sand (quartz and clays)
+
 
 % Check that one method for ice optical properties is selected, if not
 % raise exception
@@ -210,9 +223,9 @@ else
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, mss_cnc_GRISdst1, mss_cnc_GRISdst2,mss_cnc_GRISdst3,mss_cnc_GRISdst4,mss_cnc_GRISdst5,mss_cnc_GRISdst6,mss_cnc_GRISdst7,mss_cnc_GRISdst8, ...
             mss_cnc_GRISdst9,mss_cnc_GRISdst10,mss_cnc_GRISdst11,mss_cnc_GRISdst12,mss_cnc_GRISdst13,mss_cnc_GRISdst14,mss_cnc_GRISdst15,...
-            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_RBio1,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
+            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
             fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_GRISdst1,fl_GRISdst2,fl_GRISdst3,fl_GRISdst4,fl_GRISdst5,fl_GRISdst6,fl_GRISdst7,fl_GRISdst8,fl_GRISdst9,fl_GRISdst10,fl_GRISdst11,fl_GRISdst12,fl_GRISdst13,...
-            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_RBio1, fl_hematite, fl_mixed_sand);
+            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_ancyl, fl_hematite, fl_mixed_sand);
     
         for i = 1:1:length(dz)
             "******** REPORTING ICE GRAIN DIMENSIONS ********"
@@ -232,9 +245,9 @@ else
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, mss_cnc_GRISdst1, mss_cnc_GRISdst2,mss_cnc_GRISdst3,mss_cnc_GRISdst4,mss_cnc_GRISdst5,mss_cnc_GRISdst6,mss_cnc_GRISdst7,mss_cnc_GRISdst8, ...
             mss_cnc_GRISdst9,mss_cnc_GRISdst10,mss_cnc_GRISdst11,mss_cnc_GRISdst12,mss_cnc_GRISdst13,mss_cnc_GRISdst14,mss_cnc_GRISdst15,...
-            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_RBio1,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
+            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
             fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_GRISdst1,fl_GRISdst2,fl_GRISdst3,fl_GRISdst4,fl_GRISdst5,fl_GRISdst6,fl_GRISdst7,fl_GRISdst8,fl_GRISdst9,fl_GRISdst10,fl_GRISdst11,fl_GRISdst12,fl_GRISdst13,...
-            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_RBio1, fl_hematite, fl_mixed_sand);
+            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_ancyl, fl_hematite, fl_mixed_sand);
     end
 
     % process input data:   
