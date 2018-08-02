@@ -65,28 +65,26 @@
 
 clear;
 
-
 %%%%%%%%%%%%%%%%%%% USER DEFNED INPUTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
-DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
+DIRECT   = 0;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
 APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.50;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.005 0.2 0.2 0.2 0.2];
+dz       = [0.003 0.02 0.02 0.02 0.02];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
-R_sfc    = 0.1;
+R_sfc    = 0.15;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
-rho_snw(1:nbr_lyr) = [600, 600, 600, 600, 600]; 
+rho_snw(1:nbr_lyr) = [500, 500, 600, 700, 700]; 
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
@@ -96,18 +94,18 @@ GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
-rds_snw = [1000,1000,1000,1000,1000];
+rds_snw = [1000,2000,3000,3000,3000];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [20000,20000,30000,20000,30000]; 
-depth(1:nbr_lyr) = [20000,20000,30000,20000,30000];
+side_length(1:nbr_lyr) = [3000,5000,5000,8000,10000]; 
+depth(1:nbr_lyr) = [3000,5000,5000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 32;
 
 % CHOOSE GLACIER ALGAE DIMENSIONS
-algae_r = 8; % algae radius
-algae_l = 20; % algae length
+algae_r = 5; % algae radius
+algae_l = 25; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1
@@ -116,9 +114,8 @@ ancyl = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create
 
 
 % LOOP FOR LAP MASS MIXING RATIOS IN ICE
-for x = [200000]   % for reference: 1e3 = 1ug/g (1000 ppb or 1 ppm)
-                  % 1 e6 = 1000ug = 1mg
-
+for x = [0] 
+    
 % PARTICLE MASS MIXING RATIOS (units: ng(species)/g(ice), or ppb)
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
@@ -154,16 +151,12 @@ mss_cnc_bio4(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 4
 mss_cnc_bio5(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 5
 mss_cnc_bio6(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 6
 mss_cnc_bio7(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 7
-mss_cnc_ancyl(1:nbr_lyr) = [1e6,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
+mss_cnc_ancyl(1:nbr_lyr) = [1067140,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
 mss_cnc_hematite(1:nbr_lyr) = [0,0,0,0,0];   % hematite
 mss_cnc_mixed_sand(1:nbr_lyr) = [0,0,0,0,0];  % mixed sand
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 % FILE NAMES CONTAINING MIE PARAMETERS FOR ALL AEROSOL SPECIES:
 fl_sot1  = 'mie_sot_ChC90_dns_1317.nc';
@@ -293,7 +286,6 @@ else
     ylim([0,1])
     grid on;
     hold on;
-
 
     % plot subsurface light field
 
