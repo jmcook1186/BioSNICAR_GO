@@ -70,13 +70,13 @@ clear;
 
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
-DIRECT   = 0;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
+DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
 APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.50;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.003 0.01 0.01 0.02 0.02];
+dz       = [0.001 0.01 0.01 0.02 0.02];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
@@ -97,15 +97,15 @@ GeometricOptics = 1;
 rds_snw = [1000,2000,3000,3000,3000];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [3000,3000,4000,8000,10000]; 
-depth(1:nbr_lyr) = [3000,3000,4000,8000,10000];
+side_length(1:nbr_lyr) = [5000,5000,6000,8000,10000]; 
+depth(1:nbr_lyr) = [5000,5000,6000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 32;
 
 % CHOOSE GLACIER ALGAE DIMENSIONS
-algae_r = 3; % algae radius
-algae_l = 25; % algae length
+algae_r = 8; % algae radius
+algae_l = 100; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1
@@ -151,8 +151,7 @@ mss_cnc_bio4(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 4
 mss_cnc_bio5(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 5
 mss_cnc_bio6(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 6
 mss_cnc_bio7(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 7
-mss_cnc_ancyl(1:nbr_lyr) = [106714.027155041
-,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
+mss_cnc_ancyl(1:nbr_lyr) = [0,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
 mss_cnc_hematite(1:nbr_lyr) = [0,0,0,0,0];   % hematite
 mss_cnc_mixed_sand(1:nbr_lyr) = [0,0,0,0,0];  % mixed sand
 

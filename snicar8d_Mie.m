@@ -449,8 +449,6 @@ g_aer(:,32)           = ncread(fl_in32,'asm_prm');   % JC EDIT
 ext_cff_mss_aer(:,32) = ncread(fl_in32,'ext_cff_mss');   % JC EDIT
 
 
-
-
 % Set aerosol concentration matrix:
 mss_cnc_aer(1:nbr_lyr,1) = mss_cnc_sot1;
 mss_cnc_aer(1:nbr_lyr,2) = mss_cnc_sot2;
