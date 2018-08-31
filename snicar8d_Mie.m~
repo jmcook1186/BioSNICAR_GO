@@ -120,7 +120,7 @@ mss_cnc_dst3  = mss_cnc_dst3_in;
 mss_cnc_dst4  = mss_cnc_dst4_in; 
 
 mss_cnc_ash1  = mss_cnc_ash1_in;  
-mss_cnc_snw_alg  = mss_cnc_snw_alg_in;   % JC EDIT
+mss_cnc_snw_alg  = mss_cnc_bio1_in;   % JC EDIT
 mss_cnc_ancyl = mss_cnc_ancyl_in; % JC EDIT
 mss_cnc_hematite = mss_cnc_hematite_in;   % JC EDIT
 mss_cnc_mixed_sand = mss_cnc_mixed_sand_in; % JC EDIT
@@ -304,11 +304,11 @@ mss_cnc_aer(1:nbr_lyr,3) = mss_cnc_dst1;
 mss_cnc_aer(1:nbr_lyr,4) = mss_cnc_dst2;
 mss_cnc_aer(1:nbr_lyr,5) = mss_cnc_dst3;
 mss_cnc_aer(1:nbr_lyr,6) = mss_cnc_dst4;
-mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_ash1;
-mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_snw_alg; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_ancyl; %JC EDIT
-mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_hematite; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_mixed_sand; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,22) = mss_cnc_ash1;
+mss_cnc_aer(1:nbr_lyr,23) = mss_cnc_snw_alg; % JC EDIT
+
+mss_cnc_aer(1:nbr_lyr,31) = mss_cnc_hematite; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,32) = mss_cnc_mixed_sand; % JC EDIT
 
 
 % convert to units of kg/kg:

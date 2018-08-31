@@ -76,7 +76,7 @@ DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.50;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.003 0.01 0.01 0.02 0.02];
+dz       = [0.001 0.01 0.01 0.02 0.02];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
@@ -89,8 +89,8 @@ rho_snw(1:nbr_lyr) = [500, 500, 600, 700, 700];
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
 % size, choose GeometricOptics
-Mie = 0;
-GeometricOptics = 1;
+Mie = 1;
+GeometricOptics = 0;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
@@ -101,16 +101,26 @@ side_length(1:nbr_lyr) = [5000,5000,6000,8000,10000];
 depth(1:nbr_lyr) = [5000,5000,6000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
-nbr_aer = 32;
+nbr_aer = 11;
 
 % CHOOSE GLACIER ALGAE DIMENSIONS
-algae_r = 5; % algae radius
-algae_l = 10; % algae length
+algae_r = 4; % algae radius
+algae_l = 80; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1
 stb2 = '.nc';  % file extansion
 ancyl = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create filename string
+
+
+% CHOOSE SNOW ALGAE RADIUS
+snw_algae_r = 20; % algae radius
+wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
+
+snw_stb1 = 'snw_alg_'; %name stub 1
+snw_stb2 = '.nc';  % file extansion
+snw_alg = strcat(wrkdir2,stb1,num2str(snw_algae_r),'_',stb2) % create filename string
+
 
 
 % LOOP FOR LAP MASS MIXING RATIOS IN ICE
@@ -127,33 +137,14 @@ mss_cnc_dst2(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 2
 mss_cnc_dst3(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 3
 mss_cnc_dst4(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 4
 
-mss_cnc_GRISdst1(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 1 (10 micron)
-mss_cnc_GRISdst2(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 2 (20 micron)
-mss_cnc_GRISdst3(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 3 (30 micron)
-mss_cnc_GRISdst4(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 4 (40 micron)
-mss_cnc_GRISdst5(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 5 (50 micron)
-mss_cnc_GRISdst6(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 6 (60 micron)
-mss_cnc_GRISdst7(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 7 (70 micron)
-mss_cnc_GRISdst8(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 8 (80 micron)
-mss_cnc_GRISdst9(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 9 (90 micron)
-mss_cnc_GRISdst10(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 10 (100 micron)
-mss_cnc_GRISdst11(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 11 (110 micron)
-mss_cnc_GRISdst12(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 12 (120 micron)
-mss_cnc_GRISdst13(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 13 (130 micron)
-mss_cnc_GRISdst14(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 14 (140 micron)
-mss_cnc_GRISdst15(1:nbr_lyr)  = [0,0,0,0,0];    % GRIS dust species 15 (150 micron)
-
 mss_cnc_ash1(1:nbr_lyr)  = [0,0,0,0,0];    % volcanic ash species 1
-mss_cnc_bio1(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 1
-mss_cnc_bio2(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 2
-mss_cnc_bio3(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 3
-mss_cnc_bio4(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 4
-mss_cnc_bio5(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 5
-mss_cnc_bio6(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 6
-mss_cnc_bio7(1:nbr_lyr)  = [0,0,0,0,0];    % Biological impurity species 7
-mss_cnc_ancyl(1:nbr_lyr) = [20e5,0,0,0,0]; % Realistic Cell (measured pigments, 20 micron diameter)
+mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
+
+mss_cnc_ancyl(1:nbr_lyr) = [2134280,0,0,0,0]; % Ancylonema Nordenskioldii
 mss_cnc_hematite(1:nbr_lyr) = [0,0,0,0,0];   % hematite
 mss_cnc_mixed_sand(1:nbr_lyr) = [0,0,0,0,0];  % mixed sand
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,30 +157,9 @@ fl_dst2  = 'aer_dst_bln_20060904_02.nc';
 fl_dst3  = 'aer_dst_bln_20060904_03.nc';
 fl_dst4  = 'aer_dst_bln_20060904_04.nc';
 
-fl_GRISdst1 = 'GRISdust_10.nc';
-fl_GRISdst2 = 'GRISdust_20.nc';
-fl_GRISdst3 = 'GRISdust_30.nc';
-fl_GRISdst4 = 'GRISdust_40.nc';
-fl_GRISdst5 = 'GRISdust_50.nc';
-fl_GRISdst6 = 'GRISdust_60.nc';
-fl_GRISdst7 = 'GRISdust_70.nc';
-fl_GRISdst8 = 'GRISdust_80.nc';
-fl_GRISdst9 = 'GRISdust_90.nc';
-fl_GRISdst10 = 'GRISdust_100.nc';
-fl_GRISdst11 = 'GRISdust_110.nc';
-fl_GRISdst12 = 'GRISdust_120.nc';
-fl_GRISdst13 = 'GRISdust_130.nc';
-fl_GRISdst14 = 'GRISdust_140.nc';
-fl_GRISdst15 = 'GRISdust_150.nc';
-
 fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
-fl_bio1  = 'biological_1.nc'; % Biological impurity 1 (30um diameter, 1.5%chll a,10% each 1 & 2 carotenoids) )
-fl_bio2  = 'biological_2.nc'; % Biological impurity 2 (30um diameter, 1.5%chll a, 5% each 1 % 2 carotenoids)
-fl_bio3  = 'biological_3.nc'; % Biological impurity 3 (30um diameter, 1.5%chll a, 1% each 1 % 2 carotenoids)
-fl_bio4  = 'biological_4.nc'; % Biological impurity 4 (30um diameter, 1.5%chll a only)
-fl_bio5  = 'biological_5.nc'; % Biological impurity 5 (10um diameter, pigs as per bio2)
-fl_bio6  = 'biological_6.nc'; % Biological impurity 6 (50um diameter, pigs as per bio2)
-fl_bio7  = 'biological_7.nc'; % Biological impurity 7 (20um diameter, pigs as per bio2)
+fl_snw_alg  = 'biological_1.nc'; % Biological impurity 1 (30um diameter, 1.5%chll a,10% each 1 & 2 carotenoids) )
+
 fl_ancyl = ancyl; % Biological impurity with measured pigments (inc purpurogallin), 20 micron diam
 fl_hematite  = 'Hematite.nc'; % Hematite particles
 fl_mixed_sand  = 'Mixed_Sand.nc'; % Mixed sand (quartz and clays)
@@ -214,11 +184,9 @@ else
         data_in = snicar8d_GO(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
             dz, rho_snw, side_length, depth, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
-            mss_cnc_dst3, mss_cnc_dst4, mss_cnc_GRISdst1, mss_cnc_GRISdst2,mss_cnc_GRISdst3,mss_cnc_GRISdst4,mss_cnc_GRISdst5,mss_cnc_GRISdst6,mss_cnc_GRISdst7,mss_cnc_GRISdst8, ...
-            mss_cnc_GRISdst9,mss_cnc_GRISdst10,mss_cnc_GRISdst11,mss_cnc_GRISdst12,mss_cnc_GRISdst13,mss_cnc_GRISdst14,mss_cnc_GRISdst15,...
-            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_GRISdst1,fl_GRISdst2,fl_GRISdst3,fl_GRISdst4,fl_GRISdst5,fl_GRISdst6,fl_GRISdst7,fl_GRISdst8,fl_GRISdst9,fl_GRISdst10,fl_GRISdst11,fl_GRISdst12,fl_GRISdst13,...
-            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_ancyl, fl_hematite, fl_mixed_sand);
+            mss_cnc_dst3, mss_cnc_dst4, ...
+            mss_cnc_ash1, mss_cnc_snw_alg, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_snw_alg, fl_ancyl, fl_hematite, fl_mixed_sand);
     
         for i = 1:1:length(dz)
             "******** REPORTING ICE GRAIN DIMENSIONS ********"
@@ -236,11 +204,9 @@ else
             data_in = snicar8d_Mie(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
             dz, rho_snw, rds_snw, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
-            mss_cnc_dst3, mss_cnc_dst4, mss_cnc_GRISdst1, mss_cnc_GRISdst2,mss_cnc_GRISdst3,mss_cnc_GRISdst4,mss_cnc_GRISdst5,mss_cnc_GRISdst6,mss_cnc_GRISdst7,mss_cnc_GRISdst8, ...
-            mss_cnc_GRISdst9,mss_cnc_GRISdst10,mss_cnc_GRISdst11,mss_cnc_GRISdst12,mss_cnc_GRISdst13,mss_cnc_GRISdst14,mss_cnc_GRISdst15,...
-            mss_cnc_ash1, mss_cnc_bio1, mss_cnc_bio2,mss_cnc_bio3,mss_cnc_bio4,mss_cnc_bio5, mss_cnc_bio6, mss_cnc_bio7, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_GRISdst1,fl_GRISdst2,fl_GRISdst3,fl_GRISdst4,fl_GRISdst5,fl_GRISdst6,fl_GRISdst7,fl_GRISdst8,fl_GRISdst9,fl_GRISdst10,fl_GRISdst11,fl_GRISdst12,fl_GRISdst13,...
-            fl_GRISdst14,fl_GRISdst15, fl_ash1, fl_bio1,fl_bio2,fl_bio3,fl_bio4,fl_bio5,fl_bio6, fl_bio7, fl_ancyl, fl_hematite, fl_mixed_sand);
+            mss_cnc_dst3, mss_cnc_dst4, ...
+            mss_cnc_ash1, mss_cnc_snw_alg, mss_cnc_ancyl,mss_cnc_hematite, mss_cnc_mixed_sand, fl_sot1, ...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_snw_alg, fl_ancyl, fl_hematite, fl_mixed_sand);
     end
 
     % process input data:   
@@ -301,11 +267,11 @@ else
 
     figure(2);
     hold on
-    plot(wvl, sub1, 'DisplayName','0 - 1 cm');
-    plot(wvl, sub2','DisplayName','1 - 3 cm');
-    plot(wvl, sub3,'DisplayName','3 - 5 cm');
-    plot(wvl, sub4,'DisplayName','5 - 7 cm');
-    plot(wvl, sub5,'DisplayName','7 - 9 cm');
+    plot(wvl, sub1, 'DisplayName','0 - 0.3 cm');
+    plot(wvl, sub2','DisplayName','0.3 - 1.3 cm');
+    plot(wvl, sub3,'DisplayName','1.3 - 3.3 cm');
+    plot(wvl, sub4,'DisplayName','3.3 - 5.3 cm');
+    plot(wvl, sub5,'DisplayName','5.3 - 7.3 cm');
     xlabel('Wavelength (\mum)','fontsize',20);
     ylabel('Planar Intensity Wm-2','fontsize',20);
     xlim([0.3 2.5]);
