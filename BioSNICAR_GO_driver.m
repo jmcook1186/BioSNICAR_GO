@@ -89,8 +89,8 @@ rho_snw(1:nbr_lyr) = [500, 500, 600, 700, 700];
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
 % size, choose GeometricOptics
-Mie = 1;
-GeometricOptics = 0;
+Mie = 0;
+GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
@@ -113,13 +113,13 @@ stb2 = '.nc';  % file extansion
 ancyl = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create filename string
 
 
-% CHOOSE SNOW ALGAE RADIUS
-snw_algae_r = 20; % algae radius
+% CHOOSE SNOW ALGAE DIAMETER
+snw_algae_r = 1; % algae diameter
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 snw_stb1 = 'snw_alg_'; %name stub 1
 snw_stb2 = '.nc';  % file extansion
-snw_alg = strcat(wrkdir2,stb1,num2str(snw_algae_r),'_',stb2) % create filename string
+snw_alg = strcat(wrkdir2,snw_stb1,num2str(snw_algae_r),snw_stb2) % create filename string
 
 
 
@@ -136,14 +136,13 @@ mss_cnc_dst1(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 2
 mss_cnc_dst3(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 3
 mss_cnc_dst4(1:nbr_lyr)  = [0,0,0,0,0];    % dust species 4
-
 mss_cnc_ash1(1:nbr_lyr)  = [0,0,0,0,0];    % volcanic ash species 1
-mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
 
-mss_cnc_ancyl(1:nbr_lyr) = [2134280,0,0,0,0]; % Ancylonema Nordenskioldii
+mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
+mss_cnc_ancyl(1:nbr_lyr) = [0,0,0,0,0]; % Ancylonema Nordenskioldii
+
 mss_cnc_hematite(1:nbr_lyr) = [0,0,0,0,0];   % hematite
 mss_cnc_mixed_sand(1:nbr_lyr) = [0,0,0,0,0];  % mixed sand
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -156,14 +155,11 @@ fl_dst1  = 'aer_dst_bln_20060904_01.nc';
 fl_dst2  = 'aer_dst_bln_20060904_02.nc';
 fl_dst3  = 'aer_dst_bln_20060904_03.nc';
 fl_dst4  = 'aer_dst_bln_20060904_04.nc';
-
 fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
-fl_snw_alg  = 'biological_1.nc'; % Biological impurity 1 (30um diameter, 1.5%chll a,10% each 1 & 2 carotenoids) )
-
-fl_ancyl = ancyl; % Biological impurity with measured pigments (inc purpurogallin), 20 micron diam
+fl_snw_alg  = snw_alg; % snow algae (c nivalis)
+fl_ancyl = ancyl; % Glacier algae (ancylonema nordenskioldii)
 fl_hematite  = 'Hematite.nc'; % Hematite particles
 fl_mixed_sand  = 'Mixed_Sand.nc'; % Mixed sand (quartz and clays)
-
 
 % Check that one method for ice optical properties is selected, if not
 % raise exception
