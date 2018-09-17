@@ -8,21 +8,21 @@
 % Joseph Cook, Feb 2017, University of Sheffield, UK.
 
 
-filename = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/snw_alg_40.nc';
+filename = '/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/GRISdust_PSD.nc';
 rr(1:200) = 0.002; %radius in m
 
-ncwrite(filename,'rds',rr) % particle radius
+%ncwrite(filename,'rds',rr) % particle radius
 %ncwrite(filename,'ext_xsc',ExtXC) % extinction cross section
 %ncwrite(filename,'sca_xsc',ScaXC) % scattering cross section
 %ncwrite(filename,'abs_xsc',AbsXC) % absorption cross section
-ncwrite(filename,'ext_cff_mss',ExtXCmass) % mass extinction cross section
+ncwrite(filename,'ext_cff_mss',weighted_ExtXCmass) % mass extinction cross section
 %ncwrite(filename,'sca_cff_mss',ScaXCmass) % mass scattering cross section
 %ncwrite(filename,'abs_cff_mss',AbsXCmass) % mass absorption cross section
 %ncwrite(filename,'ext_cff_vlm',ExtXCvol) % volume extinction cross section
 %ncwrite(filename,'sca_cff_vlm',ScaXCvol) % volume scattering cross section
 %ncwrite(filename,'abs_cff_vlm',AbsXCvol) % volume absorption cross section
-ncwrite(filename,'ss_alb',ssa) % single scattering albedo
-ncwrite(filename,'asm_prm',asymmetry) % assymetry parameter
+ncwrite(filename,'ss_alb',weighted_ssa) % single scattering albedo
+ncwrite(filename,'asm_prm',weighted_asymmetry) % assymetry parameter
 ncwrite(filename,'rds_swa',1.00001) % surface weighted radius (analytic)
 ncwrite(filename,'rds_swr',1.00001) % surface weighted radius (resolved)
 ncwrite(filename,'rds_nma',1) % analytic number-mean radius
