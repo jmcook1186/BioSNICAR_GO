@@ -134,6 +134,7 @@ fl_GRISdust   = fl_GRISdust_in; %JC EDIT
 fl_snw_alg    = fl_snw_alg_in;   % JC EDIT
 fl_ancyl      = fl_ancyl_in; % JC EDIT
 
+
 wrkdir='./Mie_files/';
 
 % Set wavelength grid (um) and wavelength number:
