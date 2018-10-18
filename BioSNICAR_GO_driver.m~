@@ -70,13 +70,13 @@ clear;
 
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
-DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
+DIRECT   = 0;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
 APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.001 0.01 0.01 0.02 0.02];
+dz       = [0.003 0.02 0.02 0.02 0.02];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
@@ -84,7 +84,7 @@ nbr_lyr  = length(dz);  % number of snow layers
 R_sfc    = 0.15;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
-rho_snw(1:nbr_lyr) = [500, 500, 600, 700, 700]; 
+rho_snw(1:nbr_lyr) = [500, 500, 500, 700, 700]; 
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
@@ -94,18 +94,18 @@ GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
-rds_snw = [1000,2000,3000,3000,3000];
+rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [5000,5000,6000,8000,10000]; 
-depth(1:nbr_lyr) = [5000,5000,6000,8000,10000];
+side_length(1:nbr_lyr) = [3000,5000,5000,8000,10000]; 
+depth(1:nbr_lyr) = [3000,5000,8000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 10;
 
 % CHOOSE GLACIER ALGAE DIMENSIONS
 algae_r = 4; % algae radius
-algae_l = 80; % algae length
+algae_l = 40; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1
@@ -129,16 +129,16 @@ for x = [0]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];  % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
 mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 3
 mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
-mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0]; % GRIS dust
+mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_ancyl(1:nbr_lyr) =    [0,0,0,0,0]; % Ancylonema Nordenskioldii
+mss_cnc_ancyl(1:nbr_lyr) =    [1.5e5,0,0,0,0];    % Ancylonema Nordenskioldii
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

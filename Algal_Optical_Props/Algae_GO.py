@@ -88,7 +88,7 @@ def preprocess_RI():
     reals = reals[0:-1:10]
     reals=np.array(reals)
     
-    imags = pd.read_csv('/home/joe/Desktop/Machine_Learn_Tutorial/Algae_GO/temp_imag.csv',header=None)
+    imags = pd.read_csv('/home/joe/Desktop/KK.csv',header=None)
     imags = imags[0:4695]
     imags = imags[0:-1:10]
     imags=np.array(imags)
@@ -111,8 +111,7 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
     V = depth*(np.pi*r**2)    # volume of cylinder
     Reff = (V*3 / 4*np.pi)**1/3  # effective radius (i.e. radius of sphere with equal volume to real cylinder)
     Area_total = 2*(np.pi*r**2)+(2*np.pi*r)*(depth)  #total surface area - 2 x ends plus circumference * length 
-    #Area = np.mean((np.pi*r**2,diameter*depth))   # projected area
-    Area = Area_total/4
+    Area = Area_total/4 # projected area
                 
     ar = diameter/depth
     delta = 0.3
@@ -268,6 +267,8 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         plt.plot(wavelengths,absXS_list,label='{}x{}'.format(r,depth)),plt.ylabel('Absorption Cross Section'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
         plt.figure(4)
         plt.plot(wavelengths,X_list,label='{}x{}'.format(r,depth)),plt.ylabel('Size Parameter X'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
+        plt.figure(5)
+        plt.plot(wavelengths,MAC_list,label = '{}x{}'.format(r,depth)),plt.ylabel('Mass absorption cross section'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
     
     if report_dims:
         print('cell diameter = ',np.round(diameter,2),' (micron)')
@@ -301,8 +302,8 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r):
 
 reals,imags,wavelengths = preprocess_RI()
 
-for r in np.arange(0,11,1):
-    for depth in np.arange(0,41,1):
+for r in np.arange(0,7,1):
+    for depth in np.arange(0,151,1):
         if r > 0 and depth > 0:
             Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
             net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r)
