@@ -84,7 +84,7 @@ nbr_lyr  = length(dz);  % number of snow layers
 R_sfc    = 0.15;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
-rho_snw(1:nbr_lyr) = [500, 500, 500, 700, 700]; 
+rho_snw(1:nbr_lyr) = [350, 400, 500, 700, 700]; 
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
@@ -97,15 +97,15 @@ GeometricOptics = 1;
 rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [3000,5000,5000,8000,10000]; 
-depth(1:nbr_lyr) = [3000,5000,8000,8000,10000];
+side_length(1:nbr_lyr) = [3000,3000,4000,8000,10000]; 
+depth(1:nbr_lyr) = [3000,3000,4000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 10;
 
 % CHOOSE GLACIER ALGAE DIMENSIONS
-algae_r = 4; % algae radius
-algae_l = 40; % algae length
+algae_r = 3; % algae radius
+algae_l = 10; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1

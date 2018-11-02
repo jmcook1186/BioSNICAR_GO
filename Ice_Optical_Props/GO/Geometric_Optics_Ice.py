@@ -63,7 +63,7 @@ from scipy import interpolate
 from shutil import copyfile
 from netCDF4 import Dataset
 
-filepath = '/home/joe/Desktop/Machine_Learn_Tutorial/BioSNICAR_GO/'
+filepath = '/home/joe/Code/BioSNICAR_GO/GO_files/'
 plt.figure(1)
 plt.figure(2)
 plt.figure(3)
@@ -366,7 +366,7 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_l
 
 reals,imags,wavelengths = preprocess_RI()
 
-for side_length in np.arange(3000,5000,1000):
-    for depth in np.arange(3000,5000,1000):
+for side_length in np.arange(1000,5000,1000):
+    for depth in np.arange(1000,5000,1000):
             Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length = calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,report_dims = False)
             net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length)
