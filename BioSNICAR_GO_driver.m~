@@ -304,8 +304,7 @@ else
 
     
     "********* REPORTING BROADBAND ALBEDO ETC ******* "
-    % uncomment to print values to command window
-
+    
     alb_slr % albedo over solar spectrum
     flx_abs_snw; % absorbed energy in the snowpack
     heat_rt; % radiative heating rate in K/hr
