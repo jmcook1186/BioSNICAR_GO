@@ -366,7 +366,7 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_l
 
 reals,imags,wavelengths = preprocess_RI()
 
-for side_length in np.arange(1000,5000,1000):
-    for depth in np.arange(1000,5000,1000):
+for side_length in np.arange(1000,10000,500):
+    for depth in np.arange(1000,10000,500):
             Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length = calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,report_dims = False)
             net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length)
