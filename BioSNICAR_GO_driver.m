@@ -70,21 +70,21 @@ clear;
 
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
-DIRECT   = 0;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
+DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
 APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.003 0.02 0.02 0.02 0.02];
+dz       = [0.001 0.01 0.01 0.015 0.02];
 nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
-R_sfc    = 0.15;
+R_sfc    = 0.1;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
-rho_snw(1:nbr_lyr) = [350, 400, 500, 700, 700]; 
+rho_snw(1:nbr_lyr) = [400, 400, 500, 700, 700]; 
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
@@ -97,20 +97,26 @@ GeometricOptics = 1;
 rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [3000,3000,4000,8000,10000]; 
-depth(1:nbr_lyr) = [3000,3000,4000,8000,10000];
+side_length(1:nbr_lyr) = [1000,6000,8000,10000,10000]; 
+depth(1:nbr_lyr) = [1000,6000,8000,10000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
-nbr_aer = 10;
+nbr_aer = 11;
 
-% CHOOSE GLACIER ALGAE DIMENSIONS
+% CHOOSE DIMENSIONS OF GLACIER ALGAE 1
 algae_r = 3; % algae radius
-algae_l = 10; % algae length
+algae_l = 100; % algae length
 wrkdir2 = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'; % working directory
 
 stb1 = 'algae_geom_'; %name stub 1
 stb2 = '.nc';  % file extansion
-ancyl = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create filename string
+glacier_algae1 = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2) % create filename string
+
+
+% CHOOSE DIMENSIONS OF GLACIER ALGAE 2
+algae2_r = 6; % algae radius
+algae2_l = 10; % algae length
+glacier_algae2 = strcat(wrkdir2,stb1,num2str(algae2_r),'_',num2str(algae2_l),stb2) % create filename string
 
 
 % CHOOSE SNOW ALGAE DIAMETER
@@ -138,7 +144,8 @@ mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_ancyl(1:nbr_lyr) =    [0,0,0,0,0];    % Ancylonema Nordenskioldii
+mss_cnc_glacier_algae1(1:nbr_lyr) = [146220,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae2(1:nbr_lyr) = [146220,0,0,0,0];    % glacier algae type2
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +160,9 @@ fl_dst4  = 'aer_dst_bln_20060904_04.nc';
 fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
 fl_GRISdust = 'GRISdust_PSD.nc';
 fl_snw_alg  = snw_alg; % snow algae (c nivalis)
-fl_ancyl = ancyl; % Glacier algae (ancylonema nordenskioldii)
+fl_glacier_algae1 = glacier_algae1; % Glacier algae
+fl_glacier_algae2 = glacier_algae2; % Glacier algae
+
 
 % Check that one method for ice optical properties is selected, if not
 % raise exception
@@ -175,8 +184,8 @@ else
             dz, rho_snw, side_length, depth, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_ancyl, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust, fl_snw_alg, fl_ancyl);
+            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
     
         for i = 1:1:length(dz)
             "******** REPORTING ICE GRAIN DIMENSIONS ********"
@@ -195,8 +204,8 @@ else
             dz, rho_snw, rds_snw, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_ancyl, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust, fl_snw_alg, fl_ancyl);
+            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
     end
 
     % process input data:   
@@ -271,21 +280,22 @@ else
 
     %plot total energy intensity against depth
 
-    % figure(3);
-    % plot(depths,sub_tot_line);
-    % xlabel('Depth beneath surface (m)','fontsize',20);
-    % ylabel('planar intensity (Wm-2)','fontsize',20);
-    % set(gca,'xtick',0:0.01:0.1,'fontsize',16);
-    % set(gca,'ytick',0:0.1:1,'fontsize',16);
-    % hold on
+    figure(3);
+    plot(depths,sub_tot_line);
+    xlabel('Depth beneath surface (m)','fontsize',20);
+    ylabel('planar intensity (Wm-2)','fontsize',20);
+    set(gca,'xtick',0:0.01:0.1,'fontsize',16);
+    set(gca,'ytick',0:0.1:1,'fontsize',16);
+    hold on
 
     %Report albedo
    
-    "********* REPORTING BROADBAND ALBEDO ******* "
+    "********* REPORTING BROADBAND ALBEDO ETC ******* "
     
     alb_slr % albedo over solar spectrum
     flx_abs_snw; % absorbed energy in the snowpack
     heat_rt; % radiative heating rate in K/hr
+    actinic_flux_top = sub1_tot
 
     snow_depth = sum(dz); % depth of snowpack incorporating all layers
     temp_grad = ((heat_rt(1) - heat_rt(end)))/snow_depth; % temperature gradient through snowpack

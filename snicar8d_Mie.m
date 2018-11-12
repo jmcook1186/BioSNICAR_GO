@@ -1,6 +1,6 @@
 % The Snow, Ice, and Aerosol Radiative (SNICAR) Model: written by Mark
-% Flanner (flanner@umich.edu), updated to include bioloical impurities
-% by Joseph Coo (joe.cook@sheffield.ac.uk)
+% Flanner (flanner@umich.edu), updated to include biological impurities
+% by Joseph Cook (joe.cook@sheffield.ac.uk)
 %
 % This function calculates radiative fluxes at the interfaces of
 % multiple snow layers using a 2-stream approximation with a
@@ -89,9 +89,9 @@ function data_out = snicar8d_GO(BND_TYP_IN, DIRECT_IN, APRX_TYP_IN, ...
                              mss_cnc_sot1_in, mss_cnc_sot2_in, ...
                              mss_cnc_dst1_in, mss_cnc_dst2_in, ...
                              mss_cnc_dst3_in, mss_cnc_dst4_in, ...
-                             mss_cnc_ash1_in,mss_cnc_GRISdust_in, mss_cnc_snw_alg_in, mss_cnc_ancyl_in, fl_sot1_in, fl_sot2_in, ...
+                             mss_cnc_ash1_in,mss_cnc_GRISdust_in, mss_cnc_snw_alg_in, mss_cnc_glacier_algae1_in, mss_cnc_glacier_algae2_in, fl_sot1_in, fl_sot2_in, ...
                              fl_dst1_in, fl_dst2_in, fl_dst3_in, fl_dst4_in, ...
-                             fl_ash1_in, fl_GRISdust_in, fl_snw_alg_in, fl_ancyl_in);
+                             fl_ash1_in, fl_GRISdust_in, fl_snw_alg_in, fl_glacier_algae1_in, fl_glacier_algae2_in);
 
 
 % routine has been called from external function, with needed
@@ -121,7 +121,9 @@ mss_cnc_dst4  = mss_cnc_dst4_in;
 mss_cnc_ash1  = mss_cnc_ash1_in;  
 mss_cnc_GRISdust = mss_cnc_GRISdust_in; % JC EDIT
 mss_cnc_snw_alg  = mss_cnc_snw_alg_in;   % JC EDIT
-mss_cnc_ancyl = mss_cnc_ancyl_in; % JC EDIT
+mss_cnc_glacier_algae1 = mss_cnc_glacier_algae1_in; % JC EDIT
+mss_cnc_glacier_algae2 = mss_cnc_glacier_algae2_in; % JC EDIT
+
 
 fl_sot1       = fl_sot1_in;
 fl_sot2       = fl_sot2_in;
@@ -132,7 +134,9 @@ fl_dst4       = fl_dst4_in;
 fl_ash1       = fl_ash1_in;
 fl_GRISdust   = fl_GRISdust_in; %JC EDIT
 fl_snw_alg    = fl_snw_alg_in;   % JC EDIT
-fl_ancyl      = fl_ancyl_in; % JC EDIT
+fl_glacier_algae1 = fl_glacier_algae1_in; % JC EDIT
+fl_glacier_algae2 = fl_glacier_algae2_in; %JC EDIT
+
 
 wrkdir='./Mie_files/';
 
@@ -242,7 +246,9 @@ fl_in6 = strcat(wrkdir,fl_dst4);
 fl_in7 = strcat(wrkdir,fl_ash1);
 fl_in8 = strcat(wrkdir,fl_GRISdust);
 fl_in9 = strcat(fl_snw_alg); % JC EDIT
-fl_in10 = strcat(fl_ancyl); % JC EDIT
+fl_in10 = strcat(fl_glacier_algae1); % JC EDIT
+fl_in11 = strcat(fl_glacier_algae2); % JC EDIT
+
 
 omega_aer(:,1)       = ncread(fl_in1,'ss_alb');
 g_aer(:,1)           = ncread(fl_in1,'asm_prm');
@@ -285,6 +291,9 @@ omega_aer(:,10)       = ncread(fl_in10,'ss_alb');   % JC EDIT
 g_aer(:,10)           = ncread(fl_in10,'asm_prm');   % JC EDIT
 ext_cff_mss_aer(:,10) = ncread(fl_in10,'ext_cff_mss');   % JC EDIT
 
+omega_aer(:,11)       = ncread(fl_in11,'ss_alb');   % JC EDIT
+g_aer(:,11)           = ncread(fl_in11,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,11) = ncread(fl_in11,'ext_cff_mss');   % JC EDIT
 
 
 % Set aerosol concentration matrix:
@@ -297,7 +306,9 @@ mss_cnc_aer(1:nbr_lyr,6) = mss_cnc_dst4;
 mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_ash1;
 mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdust; % JC EDIT
 mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_snw_alg; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_ancyl; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_glacier_algae1; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_glacier_algae2; %JC EDIT
+
 
 
 
