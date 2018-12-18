@@ -81,7 +81,7 @@ nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
-R_sfc    = 0.1;
+R_sfc    = 0.15;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
 rho_snw(1:nbr_lyr) = [400, 400, 500, 700, 700]; 
