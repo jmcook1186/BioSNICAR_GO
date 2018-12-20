@@ -239,4 +239,6 @@ def bio_optical(chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, purp = 0.068
 
 
 
-k_list = bio_optical(m2kg = False, m2mg = True, savefiles = False, saveplots = True)
+k_list = bio_optical(chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
+                     purp = 0.068, m2kg = False, m2mg = True, 
+                     savefiles = False, saveplots = False)
