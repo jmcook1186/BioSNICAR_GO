@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jul  8 02:43:16 2018
-
-@author: joe
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
 Created on Mon May 21 08:38:44 2018
 
 @author: Joseph Cook, joe.cook@sheffield.ac.uk
@@ -74,10 +66,8 @@ from netCDF4 import Dataset
 import pandas as pd
 
 
-filepath = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'
-plt.figure(1)
-plt.figure(2)
-plt.figure(3)
+filepath = '/home/joe/Desktop/BioSNICAR_GO_CW/Algal_Optical_Props/'
+
 
 def preprocess_RI():
     
@@ -88,11 +78,12 @@ def preprocess_RI():
     reals = reals[0:-1:10]
     reals=np.array(reals)
     
-    imags = pd.read_csv('/home/joe/Desktop/KK.csv',header=None)
+    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_4_KK.csv',header=None)
     imags=np.array(imags)
     
+    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_MAC.csv',header=None)
     
-    return reals, imags, wavelengths
+    return reals, imags, MAC, wavelengths
 
 
 
@@ -104,14 +95,14 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
     MAC_list = []
     Chi_abs_list = []
     X_list = []
-    
+    density = 1400
     diameter = 2*r
     V = depth*(np.pi*r**2)    # volume of cylinder
-    Reff = (V*3 / 4*np.pi)**1/3  # effective radius (i.e. radius of sphere with equal volume to real cylinder)
+    Reff = (V/((4/3)*np.pi))**1/3  # effective radius (i.e. radius of sphere with equal volume to real cylinder)
     Area_total = 2*(np.pi*r**2)+(2*np.pi*r)*(depth)  #total surface area - 2 x ends plus circumference * length 
     #Area = np.mean((np.pi*r**2,diameter*depth))   # projected area
     Area = Area_total/4
-                
+    print(Area)            
     ar = diameter/depth
     delta = 0.3
     
@@ -189,7 +180,6 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         
         #--- absorption size parameter (Fig. 4, box 1)
         Chi_abs = mi/wl*V/Area
-        
         #----- scattering size parameter (Fig. 7, box 1)
         Chi_scat = 2.*np.pi*np.sqrt(Area/np.pi)/wl
         
@@ -245,9 +235,7 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         g_tot = 1./(2.*w)*( (2.*w-1.)*g_rt_corr + g_diffr )
         g_tot = min([g_tot,1.])
         
-    
-        absXS = Area*(1-((np.exp(-4*np.pi*mi*V))/(Area*wavelengths[i])))
-        MAC = absXS/V*1400# divide by volume*density to give mass absorption cross 
+        absXS = ((1-(np.exp(-4*np.pi*mi*V/Area*wavelengths[i])))*Area) 
         X = (2*np.pi*Reff)/wl
         
         X_list.append(X)
@@ -266,28 +254,31 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         plt.plot(wavelengths,absXS_list,label='{}x{}'.format(r,depth)),plt.ylabel('Absorption Cross Section'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
         plt.figure(4)
         plt.plot(wavelengths,X_list,label='{}x{}'.format(r,depth)),plt.ylabel('Size Parameter X'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
-    
+        plt.figure(5)
+        plt.plot(wavelengths,MAC,label='{}x{}'.format(r,depth)),plt.ylabel('MAC'),plt.xlabel('Wavelength (um)'),plt.grid(False),plt.legend(loc='best',ncol=2)
+        
     if report_dims:
         print('cell diameter = ',np.round(diameter,2),' (micron)')
         print('cell length = ',depth,' (micron)')
         print('aspect ratio = ',ar)
         print('cell volume = ', np.round(V,2),' (micron^3)')
         print('Effective radius = ', np.round(Reff,2),' (micron)')
+        print("projected area = ", np.round(Area,2))
         print() # line break
         
     return Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list
 
 
-def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r):
+def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r):
     
     template = str(filepath+'algae_geom_template.nc')
-    outfile = str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth)))
+    outfile = str(filepath+'CW_5_algae_geom_{}_{}.nc'.format(str(r),str(depth)))
     copyfile(template,outfile)
     algfile = Dataset(outfile,'r+')
     algfile.variables['asm_prm'][:] = np.array(Assy_list)
     algfile.variables['ss_alb'][:] = np.array(SSA_list)
     algfile.variables['abs_xsc'][:] = np.array(absXS_list)
-    algfile.variables['ext_cff_mss'][:] = np.array(MAC_list)
+    algfile.variables['ext_cff_mss'][:] = np.array(MAC)
     algfile.variables['depth'][:] =depth
     algfile.variables['r'] = r
     algfile.variables['prt_dns'] = 1400
@@ -298,10 +289,11 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r):
 ###############################################################################
 ##########################  FUNCTON CALLS ####################################
 
-reals,imags,wavelengths = preprocess_RI()
-Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(8,80,reals,imags,wavelengths,plots=True,report_dims = True)
+reals,imags,MAC, wavelengths = preprocess_RI()
+Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(4,40,reals,imags,wavelengths,plots=True,report_dims = True)
+net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r)
 
-#
+
 #for r in np.arange(0,11,1):
 #    for depth in np.arange(0,151,1):
 #        if r > 0 and depth > 0:
