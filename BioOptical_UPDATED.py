@@ -6,22 +6,15 @@ Created on Fri Jul 20 15:24:05 2018
 @author: joe
 """
 
-# This code has been adapted from the original bio-optical model presented in 
-# Cook et al 2017 such that it applies a volume weighted average for the RI of
-# water and a summation of the other pigments when Xw is 1 or 0 instead of going
-# to infinity in the latter case. This has the advantage of giving non-zero k
-# and non-unity single scattering albeod at wavelengths where the pigments are
-# non-absorbing. It also means the cells look like water at those non-absorbing
-# wavelengths. The real part of the refractove index is changed from 1.5 to 1.4 
-# based on Dauchet et al (2015).
+# This code takes either a measured MAC from a csv file (300 -750 nm) or calculates
+# MAC from pigment absorption coefficients and cell mass (ng/cell). It also
+# optionally provides an imaginary refrcative index calculated according to a 
+# mixing model adapted from Pottier et al (2005), Dauchet et al (2015) and Cook et al (2017).
 
-# Function options include values for each pigment expressed as % total dry mass of the cell:
-# chla = chlorophyll a, chlb = chlorophyll b, pprp = photoprotective carotenoids, psyn = photosynthetic carotenoids,
-# purp = purpurogallin-like phenolic pigment
-
-# dm_weight = weight of dry material for one cell in units of ng (mean from CW samples = 0.82ng)
-
-# The options m2kg or m2mg are options for scaling to either unit (m^2 per kg or m^2 per mg)
+# Runnign this scripts saves csv files for MAC, k etc in the working directory
+# in suitbale format for loading directly into the "Algae_GO.py" code that 
+# returns single scattering optical proerties for the cell and saves a netcdf
+# file to the Bio-SNICAR_GO lookup library
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,21 +25,18 @@ import pandas as pd
 def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
                 purp = 0.068, Xw = 0.5, density= 1400, nm = 1.4, savefiles = False, 
                 savefilename = "name", plot_title = "title", plot_figs = True):
-
-    
+  
     data = pd.DataFrame() # set up dataframe
-
 
 
     if load_MAC: # choose this option to load an empirically derived MAC from file        
         MAC = pd.read_csv('/home/joe/Desktop/Empirical_MAC.csv',header=None,names=['MAC'])
-        MAC = MAC[0:4695]
+        MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
         MAC = MAC[0:-1:10]
-        data['MAC'] = MAC['MAC'].dropna()
+        data['MAC'] = MAC['MAC'].dropna() # drop NaNs and save to dataframe
     
-
-    if calc_MAC or calc_k:
-        
+    if calc_MAC or calc_k: # choose this option to calculate MAC or k theoretically
+        # set up empty lists
         WL = []
         Ea1 = []
         Ea2 = []
@@ -64,8 +54,8 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
         real_list = []
     
         # Read in wavelength dependent in vivo absorption coefficients for each pigment
-        # and define wavelength range (k calculation takes WL in meters)
-    
+        # and define wavelength range
+        
         WL = np.arange(300,5000,10)
         WLmeters = [i*1e-9 for i in (WL)]
     
@@ -113,14 +103,14 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
     
     
        # extend spectral data down to 300nm by padding with the value at 350nm and
-       # small but non-zero value above 750 nm (avoid divide by zero errors)
-    
+       # small but non-zero value above 750 nm (avoid divide by zero errors)    
         Ea1 = [Ea1[0] for _ in range(50)] + Ea1
         Ea2 = [Ea2[0] for _ in range(50)] + Ea2
         Ea3 = [Ea3[0] for _ in range(50)] + Ea3
         Ea4 = [Ea4[0] for _ in range(50)] + Ea4
         Ea5 = [Ea5[0] for _ in range(50)] + Ea5
-    
+      
+        # extent data with zeros at nonaboring wavelengths to 5000 nm
         for i in np.arange(751,5000,1):
             Ea1.append(0)
             Ea2.append(0)
@@ -128,8 +118,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
             Ea4.append(0)
             Ea5.append(0)
     
-        # downsample to match SNICAR wavelengths)
-    
+        # downsample to match SNICAR resolution) 
         for i in np.arange(1,len(Ea1),10):
             Ea1n.append(Ea1[i])
             Ea2n.append(Ea2[i])
@@ -145,19 +134,15 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
         Ea4n[44:-1] = WatRIn[44:-1]
         Ea5n[44:-1] = WatRIn[44:-1]
     
-        # Calculate refractive indices using model from Cook et al (2017 TC) adapted so
-        # that all components always sum to 1, and additional pigment is at cost of
-        # water. Water RI included and mixed proportionally according to Xw
-        # include RI for water
         
         if calc_MAC:
 
-            # convert percentage dw pigment to actual mass of pigment
+            # convert percentage dw pigment to actual mass of pigment (ng)
             chla_w = chla * dm_weight
-            chlb_w = chla * dm_weight
-            ppro_w = chla * dm_weight
-            psyn_w = chla * dm_weight
-            purp_w = chla * dm_weight
+            chlb_w = chlb * dm_weight
+            ppro_w = ppro * dm_weight
+            psyn_w = psyn * dm_weight
+            purp_w = purp * dm_weight
             
             # Multiply mass of each pigment by absorption coefficient at each wavelenth
             EW1m = [a * chla_w for a in Ea1n]
@@ -167,9 +152,9 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
             EW5m = [a * purp_w for a in Ea5n]
             
             # Sum all pigments
-            EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)]
-            MAC = [i/0.82 for i in EWWm]
-            data['MAC'] = MAC
+            EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] 
+            MAC = [i/dm_weight for i in EWWm] #normalise to cell mass
+            data['MAC'] = MAC # save to dataframe
 
 
     if calc_k:
@@ -186,17 +171,16 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
 
         # Calculate imaginary refrcative index (k)
         for i in np.arange(0,len(WL),1):
-#            k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) original Pottier equation
-            k = (Xw * WatRIn[i]) + ((1 - Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i])
+#            k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
+            k = (Xw * WatRIn[i]) + ((1 - Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) # Cook (2018) updated version
             k_list.append(k)
             real_list.append(nm)
-            
-
+        # append real and imaginary RI to dataframe    
         data['Imag'] = k_list
         data['Real'] = real_list
             
             
-    if savefiles:
+    if savefiles: # optional save dataframe to csv files
         data.to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Cell_optics_dataset.csv')
         data['Imag'].to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/{}_KK.csv'.format(savefilename),header=None,index=False)
         data['MAC'].to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/{}_MAC.csv'.format(savefilename),header=None,index=False)
@@ -207,14 +191,14 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
         plt.plot(WL,MAC)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
-        plt.title(plot_title,fontsize=16)
+        plt.title('Mass absorption coefficient for algal cells (m$^2$/kg)',fontsize=16)
         plt.tight_layout()
 
         plt.figure(figsize=(8,8))
-        plt.plot(WL,k_list)
+        plt.plot(WL,k_list), plt.xlim(350,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
-        plt.title(plot_title,fontsize=16)
+        plt.title('Imaginary part of refractive index for algal cells',fontsize=16)
         plt.tight_layout()
     
         # Plots
@@ -230,52 +214,24 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
         plt.xlim(300,750), plt.xticks(fontsize=16),plt.yticks(fontsize=16)
         plt.legend(loc='best',fontsize=16)  
     
-        return KK, k_list, MAC, data
+        return k_list, MAC, data
 
 
-for i in np.arange(0,5,1):
 
-    if i == 0:  
-        
-        KK, k_list, MAC, data = bio_optical(load_MAC= True, calc_MAC = False, 
-        calc_k = True, dm_weight=0.82, chla = 0.00325, chlb = 0.00049, 
-        ppro = 0.00489, psyn = 0, purp = 0.0306, Xw = 0.5, density= 1400, 
-        nm = 1.4, savefiles = True, savefilename = "CW_bio_1", 
-        plot_title = "Imaginary part of refractive index for algae on 15$^{th}$ July 2016", 
+k_list, MAC, data = bio_optical(
+        load_MAC= False, 
+        calc_MAC = True, 
+        calc_k = True, 
+        dm_weight=0.89, 
+        chla = 0.0125, 
+        chlb = 0.0007, 
+        ppro = 0.00489, 
+        psyn = 0, 
+        purp = 0.0, 
+        Xw = 0.8, 
+        density= 1400, 
+        nm = 1.4, 
+        savefiles = False, 
+        savefilename = "CW_bio_1",  
         plot_figs = True)
-    
-    if i == 1:   
-        
-        KK, k_list, MAC, data = bio_optical(load_MAC= True, calc_MAC = False, 
-        calc_k = True, dm_weight=0.82, chla = 0.00323, chlb = 0.00048, 
-        ppro = 0.00385, psyn = 0, purp = 0.0357, Xw = 0.5, density= 1400, 
-        nm = 1.4, savefiles = True, savefilename = "CW_bio_2", 
-        plot_title = "Imaginary part of refractive index for algae on 15$^{th}$ July 2016", 
-        plot_figs = True)
-                
-    if i == 2:        
-        
-        KK, k_list, MAC, data = bio_optical(load_MAC= True, calc_MAC = False, 
-        calc_k = True, dm_weight=0.82, chla = 0.0019, chlb = 0.00028, 
-        ppro = 0.00227, psyn = 0, purp = 0.036, Xw = 0.5, density= 1400, 
-        nm = 1.4, savefiles = True, savefilename = "CW_bio_3", 
-        plot_title = "Imaginary part of refractive index for algae on 15$^{th}$ July 2016", 
-        plot_figs = True)
-        
-    if i == 3:        
-        
-        KK, k_list, MAC, data = bio_optical(load_MAC= True, calc_MAC = False, 
-        calc_k = True, dm_weight=0.82, chla = 0.00387, chlb = 0.00061, 
-        ppro = 0.00398, psyn = 0, purp = 0.0344, Xw = 0.5, density= 1400, 
-        nm = 1.4, savefiles = True, savefilename = "CW_bio_4", 
-        plot_title = "Imaginary part of refractive index for algae on 15$^{th}$ July 2016", 
-        plot_figs = True)
-        
-    if i == 4:        
-        KK, k_list, MAC, data = bio_optical(load_MAC= True, calc_MAC = False, 
-        calc_k = True, dm_weight=0.82, chla = 0.002, chlb = 0.00041, 
-        ppro = 0.00239, psyn = 0, purp = 0.0305, Xw = 0.5, density= 1400, 
-        nm = 1.4, savefiles = True, savefilename = "CW_bio_5", 
-        plot_title = "Imaginary part of refractive index for algae on 15$^{th}$ July 2016", 
-        plot_figs = True)
-        
+
