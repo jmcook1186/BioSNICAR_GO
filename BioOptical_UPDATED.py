@@ -191,14 +191,14 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
     
     if plot_figs:
         plt.figure(figsize=(8,8))
-        plt.plot(WL,MAC)
-        plt.xticks(fontsize=16), plt.yticks(fontsize=16), plt.xlim(300,5000)
+        plt.plot(WL[0:220],MAC[0:220]),plt.xlim(300,2500)
+        plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
         plt.title('Mass absorption coefficient for algal cells (m$^2$/kg)',fontsize=16)
         plt.tight_layout()
 
         plt.figure(figsize=(8,8))
-        plt.plot(WL,k_list), plt.xlim(350,2500)
+        plt.plot(WL[0:220],k_list[0:220]), plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
         plt.title('Imaginary part of refractive index for algal cells',fontsize=16)
@@ -212,7 +212,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         plt.plot(WL,Ea4n,label='Primary carotenoids')
         plt.plot(WL,Ea5n,label='Purpurogallin-phenolic pigment')
         plt.xlabel('Wavelengths nm',fontsize=16)
-        plt.ylabel('In vivo mass absorption coefficient (m$^2$/kg)',fontsize=16)
+        plt.ylabel('In vivo mass absorption coefficient (m$^2$/mg)',fontsize=16)
             
         plt.xlim(300,750), plt.xticks(fontsize=16),plt.yticks(fontsize=16)
         plt.legend(loc='best',fontsize=16)  
@@ -230,7 +230,7 @@ k_list, MAC, data = bio_optical(
         chlb = 0.0007, 
         ppro = 0.00489, 
         psyn = 0, 
-        purp = 0.0, 
+        purp = 0.06, 
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
