@@ -22,7 +22,7 @@ import csv
 import pandas as pd
 
 
-def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
+def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
                 purp = 0.068, Xw = 0.5, density= 1400, nm = 1.4, savefiles = False, 
                 savefilename = "name", plot_title = "title", plot_figs = True):
   
@@ -63,35 +63,35 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
-                    cellf = float(cell)
+                    cellf = float(cell)*1e-6
                     Ea1.append(cellf)
     
         with open('/home/joe/Code/chlorophyll-b.csv') as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
-                    cellf = float(cell)
+                    cellf = float(cell)*1e-6
                     Ea2.append(cellf)
     
         with open('/home/joe/Code/Photoprotective_carotenoids.csv')as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
-                    cellf = float(cell)
+                    cellf = float(cell)*1e-6
                     Ea3.append(cellf)
     
         with open('/home/joe/Code/Photosynthetic_carotenoids.csv')as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
-                    cellf = float(cell)
+                    cellf = float(cell)*1e-6
                     Ea4.append(cellf)
     
         with open('/home/joe/Code/Purpurogallin.csv')as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
-                    cellf = float(cell)*1e6
+                    cellf = float(cell)
                     Ea5.append(cellf)
     
         with open('/home/joe/Code/water_RI.csv')as f:
@@ -137,34 +137,37 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
         
         if calc_MAC:
 
-            # convert percentage dw pigment to actual mass of pigment (ng)
-            chla_w = chla * dm_weight
-            chlb_w = chlb * dm_weight
-            ppro_w = ppro * dm_weight
-            psyn_w = psyn * dm_weight
-            purp_w = purp * dm_weight
+            # convert percentage dw pigment to actual mass of pigment (mg)
+            chla_w = chla * cell_dm_weight*1e-6
+            chlb_w = chlb * cell_dm_weight*1e-6
+            ppro_w = ppro * cell_dm_weight*1e-6
+            psyn_w = psyn * cell_dm_weight*1e-6
+            purp_w = purp * cell_dm_weight*1e-6
             
-            # Multiply mass of each pigment by absorption coefficient at each wavelenth
+            # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
+            # at each wavelenth giving units of m2
             EW1m = [a * chla_w for a in Ea1n]
             EW2m = [a * chlb_w for a in Ea2n]
             EW3m = [a * ppro_w for a in Ea3n]
             EW4m = [a * psyn_w for a in Ea4n]
             EW5m = [a * purp_w for a in Ea5n]
             
-            # Sum all pigments
+            # Sum all pigments (m2)
             EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] 
-            MAC = [i/dm_weight for i in EWWm] #normalise to cell mass
+            MAC = [i/cell_dm_weight for i in EWWm] #normalise to cell mass (ng)
+            MAC = [i*1e12 for i in MAC] # convert to kg/m2
             data['MAC'] = MAC # save to dataframe
 
 
     if calc_k:
     
         # follow Pottier 2005 / Dauchet (2015) route to imaginary RI
-        EW1 = [a * chla for a in Ea1n]
-        EW2 = [a * chlb for a in Ea2n]
-        EW3 = [a * ppro for a in Ea3n]
-        EW4 = [a * psyn for a in Ea4n]
-        EW5 = [a * purp for a in Ea5n]
+        # multiply pigment MAC by % dw and convert from m2/mg to m2/kg
+        EW1 = [a * 1e6 * chla for a in Ea1n] 
+        EW2 = [a * 1e6 * chlb for a in Ea2n]
+        EW3 = [a * 1e6 * ppro for a in Ea3n]
+        EW4 = [a * 1e6 * psyn for a in Ea4n]
+        EW5 = [a * 1e6 * purp for a in Ea5n]
         
         # Sum all pigments
         EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
@@ -189,7 +192,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, dm_weight = 0.8
     if plot_figs:
         plt.figure(figsize=(8,8))
         plt.plot(WL,MAC)
-        plt.xticks(fontsize=16), plt.yticks(fontsize=16)
+        plt.xticks(fontsize=16), plt.yticks(fontsize=16), plt.xlim(300,5000)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
         plt.title('Mass absorption coefficient for algal cells (m$^2$/kg)',fontsize=16)
         plt.tight_layout()
@@ -222,7 +225,7 @@ k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
-        dm_weight=0.89, 
+        cell_dm_weight=0.89, 
         chla = 0.0125, 
         chlb = 0.0007, 
         ppro = 0.00489, 
