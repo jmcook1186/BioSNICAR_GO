@@ -89,7 +89,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
                     cellf = float(cell)*1e-6
                     Ea4.append(cellf)
     
-        with open('/home/joe/Code/Purpurogallin.csv')as f:
+        with open('/home/joe/Code/phenol_MAC.csv')as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
@@ -110,7 +110,6 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         Ea2 = [Ea2[0] for _ in range(50)] + Ea2
         Ea3 = [Ea3[0] for _ in range(50)] + Ea3
         Ea4 = [Ea4[0] for _ in range(50)] + Ea4
-        Ea5 = [Ea5[0] for _ in range(50)] + Ea5
       
         # extent data with zeros at nonaboring wavelengths to 5000 nm
         for i in np.arange(751,5000,1):
@@ -240,7 +239,7 @@ k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
-        cell_dm_weight=1.09, 
+        cell_dm_weight=1.89, 
         chla = 3.51E-9, 
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
