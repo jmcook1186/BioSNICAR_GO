@@ -21,10 +21,12 @@ import matplotlib.pyplot as plt
 import csv
 import pandas as pd
 
+plt.figure(figsize=(10,15))
+plt.title("Optical Data for Glacier Algae")
 
 def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
                 purp = 0.068, Xw = 0.5, density= 1400, nm = 1.4, savefiles = False, 
-                savefilename = "name", plot_title = "title", plot_figs = True):
+                savefilename = "name", plot_title = "title", date = "15th July 2016", plot_figs = True):
   
     data = pd.DataFrame() # set up dataframe
 
@@ -214,43 +216,31 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
     
     if plot_figs:
-        plt.figure(figsize=(10,10))
-        plt.subplot(3,1,1)
+
+        plt.subplot(2,1,1)
         plt.title(plot_title,fontsize=22)
-        plt.plot(WL[0:220],MAC[0:220]),plt.xlim(300,2500)
+        plt.plot(WL[0:220],MAC[0:220],label='{}'.format(date)),plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
+        plt.legend(loc='best')
         plt.tight_layout()
 
-        plt.subplot(3,1,2)
-        plt.plot(WL[0:220],k_list[0:220]), plt.xlim(300,2500)
+        plt.subplot(2,1,2)
+        plt.plot(WL[0:220],k_list[0:220],label='{}'.format(date)), plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
+        plt.legend(loc='best')
         plt.tight_layout()
-    
-        # Plots
-        plt.subplot(3,1,3)
-        plt.plot(WL,Ea1n,label='Chlorophyll a')
-        plt.plot(WL,Ea2n,label='Chlorophyll b')
-        plt.plot(WL,Ea3n,label='Secondary carotenoids')
-        plt.plot(WL,Ea4n,label='Primary carotenoids')
-        plt.plot(WL,Ea5n,label='Purpurogallin-phenolic pigment')
-        plt.xlabel('Wavelengths nm',fontsize=16)
-        plt.ylabel('In vivo MAC (m$^2$/mg)',fontsize=16)
-            
-        plt.xlim(300,750), plt.xticks(fontsize=16),plt.yticks(fontsize=16)
-        plt.legend(loc='best',fontsize=16)  
+
     
         return k_list, MAC, data
-
-
 # NB pigment data is provided here in units of mg per cell
         
 k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
-        cell_dm_weight=0.89, 
+        cell_dm_weight=1.09, 
         chla = 3.51E-9, 
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
@@ -261,6 +251,6 @@ k_list, MAC, data = bio_optical(
         nm = 1.4, 
         savefiles = False, 
         savefilename = "CW_bio_1", 
-        plot_title = "Optical Data for Glacier Algae",
+        date = "15th July 2016",
         plot_figs = True)
 
