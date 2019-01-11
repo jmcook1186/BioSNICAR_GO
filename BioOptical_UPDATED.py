@@ -137,12 +137,21 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         
         if calc_MAC:
 
-            # convert percentage dw pigment to actual mass of pigment (mg)
-            chla_w = chla * cell_dm_weight*1e-6
-            chlb_w = chlb * cell_dm_weight*1e-6
-            ppro_w = ppro * cell_dm_weight*1e-6
-            psyn_w = psyn * cell_dm_weight*1e-6
-            purp_w = purp * cell_dm_weight*1e-6
+            # convert percentage dw pigment to actual mass of pigment per cell (mg)
+ 
+#            chla_w = chla * cell_dm_weight*1e-6
+#            chlb_w = chlb * cell_dm_weight*1e-6
+#            ppro_w = ppro * cell_dm_weight*1e-6
+#            psyn_w = psyn * cell_dm_weight*1e-6
+#            purp_w = purp * cell_dm_weight*1e-6
+
+            # NB If data was provided in units of mg pigment/cell, read in
+            # directly.       
+            chla_w = chla
+            chlb_w = chlb
+            ppro_w = ppro
+            psyn_w = psyn
+            purp_w = purp
             
             # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
             # at each wavelenth giving units of m2
@@ -163,15 +172,30 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
     
         # follow Pottier 2005 / Dauchet (2015) route to imaginary RI
         # multiply pigment MAC by % dw and convert from m2/mg to m2/kg
-        EW1 = [a * 1e6 * chla for a in Ea1n] 
-        EW2 = [a * 1e6 * chlb for a in Ea2n]
-        EW3 = [a * 1e6 * ppro for a in Ea3n]
-        EW4 = [a * 1e6 * psyn for a in Ea4n]
-        EW5 = [a * 1e6 * purp for a in Ea5n]
+        
+                # follow Pottier 2005 / Dauchet (2015) route to imaginary RI
+        # multiply pigment MAC by % dw and convert from m2/mg to m2/kg
+        
+#        EW1 = [a * 1e6 * chla for a in Ea1n] 
+#        EW2 = [a * 1e6 * chlb for a in Ea2n]
+#        EW3 = [a * 1e6 * ppro for a in Ea3n]
+#        EW4 = [a * 1e6 * psyn for a in Ea4n]
+#        EW5 = [a * 1e6 * purp for a in Ea5n]
+        
+        # Sum all pigments
+#        EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
+        
+        # if data provided in mg pigment per cell, divide by cell weight to get
+        # mass fraction
+        EW1 = [a  * chla/cell_dm_weight for a in Ea1n] 
+        EW2 = [a  * chlb/cell_dm_weight for a in Ea2n]
+        EW3 = [a  * ppro/cell_dm_weight for a in Ea3n]
+        EW4 = [a  * psyn/cell_dm_weight for a in Ea4n]
+        EW5 = [a  * purp/cell_dm_weight for a in Ea5n]
         
         # Sum all pigments
         EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
-
+        EWW = [i*1e9 for i in EWW] # unit conversion to m2/kg
         # Calculate imaginary refrcative index (k)
         for i in np.arange(0,len(WL),1):
 #            k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
@@ -190,29 +214,29 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
     
     if plot_figs:
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(10,10))
+        plt.subplot(3,1,1)
+        plt.title(plot_title,fontsize=22)
         plt.plot(WL[0:220],MAC[0:220]),plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
-        plt.title('Mass absorption coefficient for algal cells (m$^2$/kg)',fontsize=16)
         plt.tight_layout()
 
-        plt.figure(figsize=(8,8))
+        plt.subplot(3,1,2)
         plt.plot(WL[0:220],k_list[0:220]), plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
-        plt.title('Imaginary part of refractive index for algal cells',fontsize=16)
         plt.tight_layout()
     
         # Plots
-        plt.figure(figsize=(8,8))
+        plt.subplot(3,1,3)
         plt.plot(WL,Ea1n,label='Chlorophyll a')
         plt.plot(WL,Ea2n,label='Chlorophyll b')
         plt.plot(WL,Ea3n,label='Secondary carotenoids')
         plt.plot(WL,Ea4n,label='Primary carotenoids')
         plt.plot(WL,Ea5n,label='Purpurogallin-phenolic pigment')
         plt.xlabel('Wavelengths nm',fontsize=16)
-        plt.ylabel('In vivo mass absorption coefficient (m$^2$/mg)',fontsize=16)
+        plt.ylabel('In vivo MAC (m$^2$/mg)',fontsize=16)
             
         plt.xlim(300,750), plt.xticks(fontsize=16),plt.yticks(fontsize=16)
         plt.legend(loc='best',fontsize=16)  
@@ -220,21 +244,23 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         return k_list, MAC, data
 
 
-
+# NB pigment data is provided here in units of mg per cell
+        
 k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
         cell_dm_weight=0.89, 
-        chla = 0.0125, 
-        chlb = 0.0007, 
-        ppro = 0.00489, 
+        chla = 3.51E-9, 
+        chlb = 4.52E-9, 
+        ppro = 5.725E-9, 
         psyn = 0, 
-        purp = 0.06, 
+        purp = 4.14E-8, 
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
         savefiles = False, 
-        savefilename = "CW_bio_1",  
+        savefilename = "CW_bio_1", 
+        plot_title = "Optical Data for Glacier Algae",
         plot_figs = True)
 
