@@ -64,9 +64,9 @@ from scipy import interpolate
 from shutil import copyfile
 from netCDF4 import Dataset
 import pandas as pd
+import xarray as xr
 
-
-filepath = '/home/joe/Desktop/BioSNICAR_GO_CW/Algal_Optical_Props/'
+filepath = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'
 
 
 def preprocess_RI():
@@ -81,7 +81,8 @@ def preprocess_RI():
     imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_4_KK.csv',header=None)
     imags=np.array(imags)
     
-    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_MAC.csv',header=None)
+    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_MAC.csv',names = ['vals'], header=None, index_col=None)
+    MAC = np.array(MAC['vals'])
     
     return reals, imags, MAC, wavelengths
 
@@ -101,8 +102,7 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
     Reff = (V/((4/3)*np.pi))**1/3  # effective radius (i.e. radius of sphere with equal volume to real cylinder)
     Area_total = 2*(np.pi*r**2)+(2*np.pi*r)*(depth)  #total surface area - 2 x ends plus circumference * length 
     #Area = np.mean((np.pi*r**2,diameter*depth))   # projected area
-    Area = Area_total/4
-    print(Area)            
+    Area = Area_total/4           
     ar = diameter/depth
     delta = 0.3
     
@@ -243,7 +243,6 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         SSA_list.append(w)
         Assy_list.append(g_tot)
         absXS_list.append(absXS)
-        MAC_list.append(MAC)
     
     if plots:
         plt.figure(1)    
@@ -266,38 +265,37 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         print("projected area = ", np.round(Area,2))
         print() # line break
         
-    return Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list
+    return Assy_list,SSA_list,absXS_list,MAC,depth,r,Chi_abs_list,Reff,X_list
 
 
 def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
 
-    algfile = xr.open_dataset(filepath+'algae_geom_template.nc')
-    algfile.drop(['ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
-    algfile.variables['asm_prm'][:] = np.ravel(Assy_list)
-    algfile.variables['ss_alb'][:] = np.ravel(SSA_list)
-    algfile.variables['abs_xsc'][:] = np.ravel(absXS_list)
-    algfile.variables['ext_cff_mss'][:] = np.ravel(MAC)
-    algfile.variables['depth'][:] =depth
-    algfile.assign({'r':r})
-    algfile.variables['prt_dns'][:] = density   
-    algfile.attrs['medium_type'] = 'air'
-    algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
-    algfile.attrs['psd'] = 'monodisperse'
+    with xr.open_dataset(filepath+'algae_geom_template.nc') as algfile:
+        algfile.drop(['ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
+        algfile.variables['asm_prm'][:] = np.squeeze(Assy_list)
+        algfile.variables['ss_alb'][:] = np.squeeze(SSA_list)
+        algfile.variables['abs_xsc'][:] = np.squeeze(absXS_list)
+        algfile.variables['ext_cff_mss'][:] = MAC
+        algfile.variables['depth'][:] =depth
+        algfile.assign({'r':r})
+        algfile.variables['prt_dns'][:] = density   
+        algfile.attrs['medium_type'] = 'air'
+        algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
+        algfile.attrs['psd'] = 'monodisperse'
+        algfile.to_netcdf(str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth))))
     
-    algfile.to_netcdf(str(filepath+'CW_{}_algae_geom_{}_{}.nc'.format(str(counter),str(r),str(depth))))
-
     return
 
 ###############################################################################
 ##########################  FUNCTON CALLS ####################################
 
-reals,imags,MAC, wavelengths = preprocess_RI()
-Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(4,40,reals,imags,wavelengths,plots=True,report_dims = True)
-net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density=1400)
+#reals,imags,MAC, wavelengths = preprocess_RI()
+#Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(4,40,reals,imags,wavelengths,plots=True,report_dims = True)
+#net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density=1400)
 
 
-#for r in np.arange(0,11,1):
-#    for depth in np.arange(0,151,1):
-#        if r > 0 and depth > 0:
-#            Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
-#            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r)
+for r in np.arange(1,11,1):
+    for depth in np.arange(0,41,1):
+            reals, imags, MAC, wavelengths = preprocess_RI()
+            Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
+            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r,density=1400)
