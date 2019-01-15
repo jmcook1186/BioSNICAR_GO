@@ -269,29 +269,31 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
     return Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list
 
 
-def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r):
-    
-    template = str(filepath+'algae_geom_template.nc')
-    outfile = str(filepath+'CW_5_algae_geom_{}_{}.nc'.format(str(r),str(depth)))
-    copyfile(template,outfile)
-    algfile = Dataset(outfile,'r+')
-    algfile.variables['asm_prm'][:] = np.array(Assy_list)
-    algfile.variables['ss_alb'][:] = np.array(SSA_list)
-    algfile.variables['abs_xsc'][:] = np.array(absXS_list)
-    algfile.variables['ext_cff_mss'][:] = np.array(MAC)
+def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
+
+    algfile = xr.open_dataset(filepath+'algae_geom_template.nc')
+    algfile.drop(['ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
+    algfile.variables['asm_prm'][:] = np.ravel(Assy_list)
+    algfile.variables['ss_alb'][:] = np.ravel(SSA_list)
+    algfile.variables['abs_xsc'][:] = np.ravel(absXS_list)
+    algfile.variables['ext_cff_mss'][:] = np.ravel(MAC)
     algfile.variables['depth'][:] =depth
-    algfile.variables['r'] = r
-    algfile.variables['prt_dns'] = 1400
-    algfile.close()
+    algfile.assign({'r':r})
+    algfile.variables['prt_dns'][:] = density   
+    algfile.attrs['medium_type'] = 'air'
+    algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
+    algfile.attrs['psd'] = 'monodisperse'
     
-    return 
+    algfile.to_netcdf(str(filepath+'CW_{}_algae_geom_{}_{}.nc'.format(str(counter),str(r),str(depth))))
+
+    return
 
 ###############################################################################
 ##########################  FUNCTON CALLS ####################################
 
 reals,imags,MAC, wavelengths = preprocess_RI()
 Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(4,40,reals,imags,wavelengths,plots=True,report_dims = True)
-net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r)
+net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density=1400)
 
 
 #for r in np.arange(0,11,1):
