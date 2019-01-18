@@ -81,7 +81,7 @@ nbr_lyr  = length(dz);  % number of snow layers
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
-R_sfc    = 0.15;
+R_sfc    = 0.1;
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
 rho_snw(1:nbr_lyr) = [300, 400, 500, 600, 700]; 
@@ -97,8 +97,8 @@ GeometricOptics = 1;
 rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [3000,8000,10000,10000,10000]; 
-depth(1:nbr_lyr) = [3000,8000,10000,10000,10000];
+side_length(1:nbr_lyr) = [1000,6000,10000,10000,10000]; 
+depth(1:nbr_lyr) = [1000,6000,10000,10000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 11;
@@ -115,7 +115,7 @@ snw_stb1 = 'snw_alg_'; % name stub for snow algae
 
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 1
-algae_r = 4; % algae radius
+algae_r = 5; % algae radius
 algae_l = 20; % algae length
 glacier_algae1 = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2); % create filename string
 
@@ -140,7 +140,7 @@ for x = [0]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [100000,0,0,0,0];    % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
@@ -149,7 +149,7 @@ mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [100000,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae1(1:nbr_lyr) = [3007200,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
 

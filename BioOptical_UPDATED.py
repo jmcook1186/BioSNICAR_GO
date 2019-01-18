@@ -12,7 +12,7 @@ Created on Fri Jul 20 15:24:05 2018
 # mixing model adapted from Pottier et al (2005), Dauchet et al (2015) and Cook et al (2017).
 
 # Runnign this scripts saves csv files for MAC, k etc in the working directory
-# in suitbale format for loading directly into the "Algae_GO.py" code that 
+# in suitable format for loading directly into the "Algae_GO.py" code that 
 # returns single scattering optical proerties for the cell and saves a netcdf
 # file to the Bio-SNICAR_GO lookup library
 
@@ -24,6 +24,7 @@ import pandas as pd
 plt.figure(figsize=(10,15))
 plt.title("Optical Data for Glacier Algae")
 
+# provide pigments as a mass fraction or absolute mass per cell, cell_dm_weight in ng, density in kg/m3
 def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0, 
                 purp = 0.068, Xw = 0.5, density= 1400, nm = 1.4, savefiles = False, 
                 savefilename = "name", plot_title = "title", date = "15th July 2016", plot_figs = True):
@@ -111,7 +112,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         Ea3 = [Ea3[0] for _ in range(50)] + Ea3
         Ea4 = [Ea4[0] for _ in range(50)] + Ea4
       
-        # extent data with zeros at nonaboring wavelengths to 5000 nm
+        # extent data with zeros at nonabsoring wavelengths to 5000 nm
         for i in np.arange(751,5000,1):
             Ea1.append(0)
             Ea2.append(0)
@@ -186,17 +187,19 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         # Sum all pigments
 #        EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
         
-        # if data provided in mg pigment per cell, divide by cell weight to get
-        # mass fraction
-        EW1 = [a  * chla/cell_dm_weight for a in Ea1n] 
-        EW2 = [a  * chlb/cell_dm_weight for a in Ea2n]
-        EW3 = [a  * ppro/cell_dm_weight for a in Ea3n]
-        EW4 = [a  * psyn/cell_dm_weight for a in Ea4n]
-        EW5 = [a  * purp/cell_dm_weight for a in Ea5n]
+        # if data provided in mg pigment per cell, divide by cell weight in mg
+        # to get mass fraction
+        
+        EW1 = [a  * chla/(cell_dm_weight*1e-6) for a in Ea1n] 
+        EW2 = [a  * chlb/(cell_dm_weight*1e-6) for a in Ea2n]
+        EW3 = [a  * ppro/(cell_dm_weight*1e-6) for a in Ea3n]
+        EW4 = [a  * psyn/(cell_dm_weight*1e-6) for a in Ea4n]
+        EW5 = [a  * purp/(cell_dm_weight*1e-6) for a in Ea5n]
         
         # Sum all pigments
         EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
-        EWW = [i*1e9 for i in EWW] # unit conversion to m2/kg
+        EWW = [i*1e6 for i in EWW] # unit conversion to m2/kg
+        
         # Calculate imaginary refrcative index (k)
         for i in np.arange(0,len(WL),1):
 #            k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
@@ -217,7 +220,6 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
     if plot_figs:
 
         plt.subplot(2,1,1)
-        plt.title(plot_title,fontsize=22)
         plt.plot(WL[0:220],MAC[0:220],label='{}'.format(date)),plt.xlim(300,2500)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
@@ -233,18 +235,18 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
     
         return k_list, MAC, data
-# NB pigment data is provided here in units of mg per cell
-        
+
+# NB pigment data is provided here in units of mg per cell      
 k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
-        cell_dm_weight=1.89, 
+        cell_dm_weight=1.89, # unit = ng
         chla = 3.51E-9, 
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
         psyn = 0, 
-        purp = 4.14E-8, 
+        purp = 4, 
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 

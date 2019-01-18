@@ -78,7 +78,7 @@ def preprocess_RI():
     reals = reals[0:-1:10]
     reals=np.array(reals)
     
-    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_4_KK.csv',header=None)
+    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_KK.csv',header=None)
     imags=np.array(imags)
     
     MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_MAC.csv',names = ['vals'], header=None, index_col=None)
@@ -295,7 +295,7 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
 
 
 for r in np.arange(1,11,1):
-    for depth in np.arange(0,41,1):
+    for depth in np.arange(1,40,1):
             reals, imags, MAC, wavelengths = preprocess_RI()
             Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
             net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r,density=1400)
