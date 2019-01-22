@@ -33,7 +33,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
 
     if load_MAC: # choose this option to load an empirically derived MAC from file        
-        MAC = pd.read_csv('/home/joe/Desktop/Empirical_MAC.csv',header=None,names=['MAC'])
+        MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Empirical_MAC.csv',header=None,names=['MAC'])
         MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
         MAC = MAC[0:-1:10]
         data['MAC'] = MAC['MAC'].dropna() # drop NaNs and save to dataframe
@@ -129,7 +129,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
             Ea5n.append(Ea5[i])
             WatRIn.append(WatRI[i])
     
-        # copy water RI over zeros at non-absorbing wavelengths
+        # copy water RI over zeros at non-absorbing wavTrueelengths
         Ea1n[44:-1] = WatRIn[44:-1]
         Ea2n[44:-1] = WatRIn[44:-1]
         Ea3n[44:-1] = WatRIn[44:-1]
@@ -147,7 +147,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 #            psyn_w = psyn * cell_dm_weight*1e-6
 #            purp_w = purp * cell_dm_weight*1e-6
 
-            # NB If data was provided in units of mg pigment/cell, read in
+            # NB If data was provided in units of mg piTruegment/cell, read in
             # directly.       
             chla_w = chla
             chlb_w = chlb
@@ -209,7 +209,9 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         # append real and imaginary RI to dataframe    
         data['Imag'] = k_list
         data['Real'] = real_list
-                        
+        
+        
+        
     if savefiles: # optional save dataframe to csv files
         data.to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Cell_optics_dataset.csv')
         data['Imag'].to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/{}_KK.csv'.format(savefilename),header=None,index=False)
@@ -236,8 +238,8 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
 # NB pigment data is provided here in units of mg per cell      
 k_list, MAC, data = bio_optical(
-        load_MAC= False, 
-        calc_MAC = True, 
+        load_MAC= True, 
+        calc_MAC = False, 
         calc_k = True, 
         cell_dm_weight=1.89, # unit = ng
         chla = 3.51E-9, 
@@ -245,8 +247,8 @@ k_list, MAC, data = bio_optical(
         ppro = 5.725E-9, 
         psyn = 0, 
         purp = 4E-8, 
-        Xw = 0.5, 
-        density= 1500, 
+        Xw = 0.8, 
+        density= 1400, 
         nm = 1.4, 
         savefiles = False, 
         savefilename = "CW_bio_1", 

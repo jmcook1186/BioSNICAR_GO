@@ -140,7 +140,7 @@ for x = [0]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [100000,0,0,0,0];    % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
@@ -149,7 +149,7 @@ mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [100000,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae1(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
 
