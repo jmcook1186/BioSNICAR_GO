@@ -202,32 +202,30 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         
         # Calculate imaginary refrcative index (k)
         for i in np.arange(0,len(WL),1):
-#            k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
+  #          k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
             k = (Xw * WatRIn[i]) + ((1 - Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) # Cook (2018) updated version
             k_list.append(k)
             real_list.append(nm)
         # append real and imaginary RI to dataframe    
         data['Imag'] = k_list
         data['Real'] = real_list
-            
-            
+                        
     if savefiles: # optional save dataframe to csv files
         data.to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Cell_optics_dataset.csv')
         data['Imag'].to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/{}_KK.csv'.format(savefilename),header=None,index=False)
         data['MAC'].to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/{}_MAC.csv'.format(savefilename),header=None,index=False)
-
     
     if plot_figs:
 
         plt.subplot(2,1,1)
-        plt.plot(WL[0:220],MAC[0:220],label='{}'.format(date)),plt.xlim(300,2500)
+        plt.plot(WL[0:220],MAC[0:220],label='{}'.format(date)),plt.xlim(300,750)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
         plt.legend(loc='best')
         plt.tight_layout()
 
         plt.subplot(2,1,2)
-        plt.plot(WL[0:220],k_list[0:220],label='{}'.format(date)), plt.xlim(300,2500)
+        plt.plot(WL[0:220],k_list[0:220],label='{}'.format(date)), plt.xlim(300,750)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
         plt.legend(loc='best')
@@ -246,9 +244,9 @@ k_list, MAC, data = bio_optical(
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
         psyn = 0, 
-        purp = 4, 
-        Xw = 0.8, 
-        density= 1400, 
+        purp = 4E-8, 
+        Xw = 0.5, 
+        density= 1500, 
         nm = 1.4, 
         savefiles = False, 
         savefilename = "CW_bio_1", 
