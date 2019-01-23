@@ -283,19 +283,6 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
     algfile.attrs['density'] = density
     algfile.attrs['origin'] = 'Optical properties derived from geometrical optics calculations (algae_go.py) with empirically derived MAC'
     algfile.to_netcdf(str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth))))
-
-#    with xr.open_dataset(filepath+'algae_geom_template.nc') as algfile:
-#        algfile = algfile.drop(['nang','gsd','rds_swr','rds_nma','ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
-#        algfile.variables['asm_prm'][:] = np.squeeze(Assy_list)
-#        algfile.variables['ss_alb'][:] = np.squeeze(SSA_list)
-#        algfile.variables['ext_cff_mss'][:] = MAC
-#        algfile.variables['depth'][:] =depth
-#        algfile.assign({'radius':r})
-#        algfile.variables['prt_dns'][:] = density   
-#        algfile.attrs['medium_type'] = 'air'
-#        algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
-#        algfile.attrs['psd'] = 'monodisperse'
-#        algfile.to_netcdf(str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth))))
     
     return
 

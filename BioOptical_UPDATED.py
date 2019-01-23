@@ -111,7 +111,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         Ea2 = [Ea2[0] for _ in range(50)] + Ea2
         Ea3 = [Ea3[0] for _ in range(50)] + Ea3
         Ea4 = [Ea4[0] for _ in range(50)] + Ea4
-      
+        
         # extent data with zeros at nonabsoring wavelengths to 5000 nm
         for i in np.arange(751,5000,1):
             Ea1.append(0)
@@ -135,40 +135,37 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         Ea3n[44:-1] = WatRIn[44:-1]
         Ea4n[44:-1] = WatRIn[44:-1]
         Ea5n[44:-1] = WatRIn[44:-1]
-    
-        
-        if calc_MAC:
-
-            # convert percentage dw pigment to actual mass of pigment per cell (mg)
- 
+            
+    if calc_MAC:        
+        # convert percentage dw pigment to actual mass of pigment per cell (mg)
 #            chla_w = chla * cell_dm_weight*1e-6
 #            chlb_w = chlb * cell_dm_weight*1e-6
 #            ppro_w = ppro * cell_dm_weight*1e-6
 #            psyn_w = psyn * cell_dm_weight*1e-6
 #            purp_w = purp * cell_dm_weight*1e-6
 
-            # NB If data was provided in units of mg piTruegment/cell, read in
-            # directly.       
-            chla_w = chla
-            chlb_w = chlb
-            ppro_w = ppro
-            psyn_w = psyn
-            purp_w = purp
-            
-            # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
-            # at each wavelenth giving units of m2
-            EW1m = [a * chla_w for a in Ea1n]
-            EW2m = [a * chlb_w for a in Ea2n]
-            EW3m = [a * ppro_w for a in Ea3n]
-            EW4m = [a * psyn_w for a in Ea4n]
-            EW5m = [a * purp_w for a in Ea5n]
-            
-            # Sum all pigments (m2)
-            EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] 
-            MAC = [i/cell_dm_weight for i in EWWm] #normalise to cell mass (ng)
-            MAC = [i*1e12 for i in MAC] # convert to kg/m2
-            data['MAC'] = MAC # save to dataframe
-
+        # NB If data was provided in units of mg pigment/cell, read in
+        # directly.       
+        chla_w = chla
+        chlb_w = chlb
+        ppro_w = ppro
+        psyn_w = psyn
+        purp_w = purp
+        
+        # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
+        # at each wavelenth giving units of m2 per cell
+        EW1m = [a * chla_w for a in Ea1n]
+        EW2m = [a * chlb_w for a in Ea2n]
+        EW3m = [a * ppro_w for a in Ea3n]
+        EW4m = [a * psyn_w for a in Ea4n]
+        EW5m = [a * purp_w for a in Ea5n]
+        
+        # Sum all pigments (m2)
+        EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] 
+        
+        MAC = [(i/cell_dm_weight)*1e12 for i in EWWm] #normalise from cell to mass (x 1e12 to get m3/kg)
+        
+        data['MAC'] = MAC # save to dataframe
 
     if calc_k:
     
@@ -188,29 +185,34 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 #        EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
         
         # if data provided in mg pigment per cell, divide by cell weight in mg
-        # to get mass fraction
+        # to get mass fraction. multiply by pigment MAC (x 1e6 = m2/kg)
+         
+        chla_frac = chla/(cell_dm_weight*1e-6)
+        chlb_frac = chlb/(cell_dm_weight*1e-6)
+        ppro_frac = ppro/(cell_dm_weight*1e-6)
+        psyn_frac = psyn/(cell_dm_weight*1e-6)
+        purp_frac = purp/(cell_dm_weight*1e-6)
         
-        EW1 = [a  * chla/(cell_dm_weight*1e-6) for a in Ea1n] 
-        EW2 = [a  * chlb/(cell_dm_weight*1e-6) for a in Ea2n]
-        EW3 = [a  * ppro/(cell_dm_weight*1e-6) for a in Ea3n]
-        EW4 = [a  * psyn/(cell_dm_weight*1e-6) for a in Ea4n]
-        EW5 = [a  * purp/(cell_dm_weight*1e-6) for a in Ea5n]
+        EW1 = [a  * 1e6 * chla_frac for a in Ea1n] 
+        EW2 = [a  * 1e6 * chlb_frac for a in Ea2n]
+        EW3 = [a  * 1e6 * ppro_frac for a in Ea3n]
+        EW4 = [a  * 1e6 * psyn_frac for a in Ea4n]
+        EW5 = [a  * 1e6 * purp_frac for a in Ea5n]
         
         # Sum all pigments
         EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)]
-        EWW = [i*1e6 for i in EWW] # unit conversion to m2/kg
         
-        # Calculate imaginary refrcative index (k)
+        # Calculate imaginary refractive index (k)
         for i in np.arange(0,len(WL),1):
-  #          k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
+    #        k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
             k = (Xw * WatRIn[i]) + ((1 - Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) # Cook (2018) updated version
             k_list.append(k)
             real_list.append(nm)
+            
         # append real and imaginary RI to dataframe    
         data['Imag'] = k_list
         data['Real'] = real_list
-        
-        
+
         
     if savefiles: # optional save dataframe to csv files
         data.to_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Cell_optics_dataset.csv')
@@ -238,10 +240,10 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
 # NB pigment data is provided here in units of mg per cell      
 k_list, MAC, data = bio_optical(
-        load_MAC= True, 
-        calc_MAC = False, 
+        load_MAC= False, 
+        calc_MAC = True, 
         calc_k = True, 
-        cell_dm_weight=1.89, # unit = ng
+        cell_dm_weight=1.99, # unit = ng
         chla = 3.51E-9, 
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
@@ -250,7 +252,7 @@ k_list, MAC, data = bio_optical(
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
-        savefiles = True, 
+        savefiles = False, 
         savefilename = "CW_bio_1", 
         date = "15th July 2016",
         plot_figs = True)
