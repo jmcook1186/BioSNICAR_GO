@@ -78,10 +78,10 @@ def preprocess_RI():
     reals = reals[0:-1:10]
     reals=np.array(reals)
     
-    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_KK.csv',header=None)
+    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_1_KK.csv',header=None)
     imags=np.array(imags)
     
-    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_5_MAC.csv',names = ['vals'], header=None, index_col=None)
+    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_1_MAC.csv',names = ['vals'], header=None, index_col=None)
     MAC = np.array(MAC['vals'])
     
     return reals, imags, MAC, wavelengths
@@ -271,13 +271,13 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
 def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
 
     with xr.open_dataset(filepath+'algae_geom_template.nc') as algfile:
-        algfile.drop(['ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
+        algfile.drop(['nang','gsd','rds_swr','rds_nma','ext_xsc','sca_xsc','abs_xsc','sca_cff_mss','abs_cff_mss','bnd_nbr'])
         algfile.variables['asm_prm'][:] = np.squeeze(Assy_list)
         algfile.variables['ss_alb'][:] = np.squeeze(SSA_list)
         algfile.variables['abs_xsc'][:] = np.squeeze(absXS_list)
         algfile.variables['ext_cff_mss'][:] = MAC
         algfile.variables['depth'][:] =depth
-        algfile.assign({'r':r})
+        algfile.assign({'radius':r})
         algfile.variables['prt_dns'][:] = density   
         algfile.attrs['medium_type'] = 'air'
         algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
@@ -294,8 +294,8 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
 #net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density=1400)
 
 
-for r in np.arange(1,11,1):
-    for depth in np.arange(1,40,1):
+for r in np.arange(1,7,1):
+    for depth in np.arange(1,41,1):
             reals, imags, MAC, wavelengths = preprocess_RI()
             Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
-            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r,density=1500)
+            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r,density=1400)
