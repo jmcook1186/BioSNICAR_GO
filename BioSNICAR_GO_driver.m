@@ -115,13 +115,13 @@ snw_stb1 = 'snw_alg_'; % name stub for snow algae
 
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 1
-algae_r = 4; % algae radius
-algae_l = 20; % algae length
+algae_r = 5; % algae radius
+algae_l = 30; % algae length
 glacier_algae1 = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2); % create filename string
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 2
-algae2_r = 5; % algae radius
-algae2_l = 40; % algae length
+algae2_r = 4; % algae radius
+algae2_l = 30; % algae length
 glacier_algae2 = strcat(wrkdir2,stb1,num2str(algae2_r),'_',num2str(algae2_l),stb2); % create filename string
 
 % CHOOSE SNOW ALGAE DIAMETER
