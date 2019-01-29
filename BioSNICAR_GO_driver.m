@@ -71,7 +71,7 @@ clear;
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
 DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
-APRX_TYP = 3;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
+APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
 
@@ -94,11 +94,11 @@ GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
-rds_snw = [300,400,500,500,500];
+rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [1000,3000,5000,5000,8000]; 
-depth(1:nbr_lyr) = [1000,3000,5000,5000,8000];
+side_length(1:nbr_lyr) = [5000,8000,10000,10000,10000]; 
+depth(1:nbr_lyr) = [5000,8000,10000,10000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 11;
@@ -140,7 +140,7 @@ for x = [0]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [50000,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
@@ -148,8 +148,8 @@ mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 3
 mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
-mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type1
+mss_cnc_snw_alg(1:nbr_lyr)  = [50000,0,0,0,0];    % Snow Algae (spherical, C nivalis)
+mss_cnc_glacier_algae1(1:nbr_lyr) = [520000,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
 
@@ -227,11 +227,11 @@ else
     
     % do not allow albedo to drop below 0
 
-%     for i = 1:1:length(albedo)
-%         if albedo(i) <= 0;
-%             albedo(i) = 0.0000001;
-%         end
-%     end
+    for i = 1:1:length(albedo)
+        if albedo(i) <= 0;
+            albedo(i) = 0.0000001;
+        end
+    end
     
     alb_slr     = data_in(1,3);   % broadband albedo (0.3-5.0um)
     alb_vis     = data_in(2,3);   % visible albedo (0.3-0.7um)

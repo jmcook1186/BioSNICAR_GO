@@ -224,7 +224,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
         plt.subplot(2,1,1)
         plt.plot(WL[0:220],MAC[0:220],label='{}'.format(date)),plt.xlim(300,750)
         plt.xticks(fontsize=16), plt.yticks(fontsize=16)
-        plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (m$^2$/ kg)',fontsize=16)
+        plt.xlabel('Wavelength',fontsize=16),plt.ylabel('MAC (kg/m^3)',fontsize=16)
         plt.legend(loc='best')
         plt.tight_layout()
 
@@ -243,7 +243,7 @@ k_list, MAC, data = bio_optical(
         load_MAC= False, 
         calc_MAC = True, 
         calc_k = True, 
-        cell_dm_weight=1.89, # unit = ng
+        cell_dm_weight=1.99, # unit = ng
         chla = 3.51E-9, 
         chlb = 4.52E-9, 
         ppro = 5.725E-9, 
@@ -252,7 +252,7 @@ k_list, MAC, data = bio_optical(
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
-        savefiles = True, 
+        savefiles = False, 
         savefilename = "CW_bio_1", 
         date = "15th July 2016",
         plot_figs = True)
