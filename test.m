@@ -71,9 +71,11 @@ clear;
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
 DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
-APRX_TYP = 3;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
+APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
-coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
+
+
+
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
 dz       = [0.001 0.01 0.01 0.01 0.01];
@@ -134,8 +136,8 @@ snw_alg = strcat(wrkdir2,snw_stb1,num2str(snw_algae_r),stb2); % create filename 
 % LOOP FOR LAP MASS MIXING RATIOS IN ICE BY SETTING RANGE OF X'S 
 % (REMOVE X AND USE SPECIFIC VALUES FOR SINGLE RUNS)
 
-for x = [0] 
-    
+
+
 % PARTICLE MASS MIXING RATIOS (units: ng(species)/g(ice), or ppb)
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
@@ -156,159 +158,135 @@ mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%% CALL FUNCTIONS AND PLOT OUTPUTS %%%%%%%%%%%%%%%%%%%%%%%
-
-% SET FILE NAMES CONTAINING OPTICAL PARAMETERS FOR ALL IMPURITIES:
-
-fl_sot1  = 'mie_sot_ChC90_dns_1317.nc';
-fl_sot2  = 'miecot_slfsot_ChC90_dns_1317.nc';
-fl_dst1  = 'aer_dst_bln_20060904_01.nc';
-fl_dst2  = 'aer_dst_bln_20060904_02.nc';
-fl_dst3  = 'aer_dst_bln_20060904_03.nc';
-fl_dst4  = 'aer_dst_bln_20060904_04.nc';
-fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
-fl_GRISdust = 'GRISdust_PSD.nc';
-fl_snw_alg  = snw_alg; % snow algae (c nivalis)
-fl_glacier_algae1 = glacier_algae1; % Glacier algae
-fl_glacier_algae2 = glacier_algae2; % Glacier algae
-
-
-% Check that one method for ice optical properties is selected, if not
-% raise exception
-
-if GeometricOptics == 1 && Mie ==1 
-
-    error = "You have selected both methods for ice grain optics - please pick one!" 
-
-elseif GeometricOptics == 0 && Mie ==0
-    error = "You have not selected a method for ice grain optics, please choose either Mie or Geometric Optics"
-
-else
+for o = 0:0.02:0.6
     
-    % run snicar in either GO or Mie mode:
-    
-    if GeometricOptics == 1
-        
-        data_in = snicar8d_GO(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
-            dz, rho_snw, side_length, depth, nbr_aer, mss_cnc_sot1, ...
-            mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
-            mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
-    
-        for i = 1:1:length(dz)
-            "******** REPORTING ICE GRAIN DIMENSIONS ********"
-            Volume(i) = 1.5*sqrt(3)*(side_length(i)^2)*depth(i); % ice grain volume
-            Area_total(i) = 3 * side_length(i) * (sqrt(3)*side_length(i)+depth(i)*2); %total surface area 
-            Area(i) = Area_total(i)/4;   % projected area
-            apothem(i) = (2*Area(i)) / (depth(i)*6); % apothem is distance from centre point to midpoint of a side for hexagon
-            diameter(i) = 2*apothem(i); % midpoint of one side to midpoint of opposite side
+    coszen   = o;     % if DIRECT give cosine of solar zenith angle
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%% CALL FUNCTIONS AND PLOT OUTPUTS %%%%%%%%%%%%%%%%%%%%%%%
+
+    % SET FILE NAMES CONTAINING OPTICAL PARAMETERS FOR ALL IMPURITIES:
+
+    fl_sot1  = 'mie_sot_ChC90_dns_1317.nc';
+    fl_sot2  = 'miecot_slfsot_ChC90_dns_1317.nc';
+    fl_dst1  = 'aer_dst_bln_20060904_01.nc';
+    fl_dst2  = 'aer_dst_bln_20060904_02.nc';
+    fl_dst3  = 'aer_dst_bln_20060904_03.nc';
+    fl_dst4  = 'aer_dst_bln_20060904_04.nc';
+    fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
+    fl_GRISdust = 'GRISdust_PSD.nc';
+    fl_snw_alg  = snw_alg; % snow algae (c nivalis)
+    fl_glacier_algae1 = glacier_algae1; % Glacier algae
+    fl_glacier_algae2 = glacier_algae2; % Glacier algae
+
+
+    % Check that one method for ice optical properties is selected, if not
+    % raise exception
+
+    if GeometricOptics == 1 && Mie ==1 
+
+        error = "You have selected both methods for ice grain optics - please pick one!" 
+
+    elseif GeometricOptics == 0 && Mie ==0
+        error = "You have not selected a method for ice grain optics, please choose either Mie or Geometric Optics"
+
+    else
+
+        % run snicar in either GO or Mie mode:
+
+        if GeometricOptics == 1
+
+            data_in = snicar8d_GO(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
+                dz, rho_snw, side_length, depth, nbr_aer, mss_cnc_sot1, ...
+                mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
+                mss_cnc_dst3, mss_cnc_dst4, ...
+                mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
+                fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
+
+            for i = 1:1:length(dz)
+                "******** REPORTING ICE GRAIN DIMENSIONS ********"
+                Volume(i) = 1.5*sqrt(3)*(side_length(i)^2)*depth(i); % ice grain volume
+                Area_total(i) = 3 * side_length(i) * (sqrt(3)*side_length(i)+depth(i)*2); %total surface area 
+                Area(i) = Area_total(i)/4;   % projected area
+                apothem(i) = (2*Area(i)) / (depth(i)*6); % apothem is distance from centre point to midpoint of a side for hexagon
+                diameter(i) = 2*apothem(i); % midpoint of one side to midpoint of opposite side
+            end
+
         end
-        
+
+        if Mie == 1
+
+                data_in = snicar8d_Mie(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
+                dz, rho_snw, rds_snw, nbr_aer, mss_cnc_sot1, ...
+                mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
+                mss_cnc_dst3, mss_cnc_dst4, ...
+                mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
+                fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
+        end
+
+        % process input data:   
+        wvl         = data_in(:,1);   % wavelength grid
+        albedo      = data_in(:,2);   % spectral albedo
+
+
+        % do not allow albedo to drop below 0
+
+    %     for i = 1:1:length(albedo)
+    %         if albedo(i) <= 0;
+    %             albedo(i) = 0.0000001;
+    %         end
+    %     end
+
+        alb_slr     = data_in(1,3);   % broadband albedo (0.3-5.0um)
+        alb_vis     = data_in(2,3);   % visible albedo (0.3-0.7um)
+        alb_nir     = data_in(3,3);   % near-IR albedo (0.7-5.0um)
+        flx_abs_snw = data_in(4,3);   % total radiative absorption by all snow layers (not including underlying substrate)
+        flx_abs(1)     = data_in(6,4); % top layer solar absorption
+        flx_vis_abs(1) = data_in(7,4); % top layer VIS absorption
+        flx_nir_abs(1) = data_in(8,4); % top layer NIR absorption
+        heat_rt = data_in([1:5],6); % heating rate per layer K/hr
+        F_abs = [data_in(6,4),data_in(9,4),data_in(12,4),data_in(15,4),data_in(18,4)]; % absorbed energy per layer (W/m2)
+        intensity2 = data_in([1:470],[7:11]);
+
+        %albedo = smooth(albedo,0.005); % add a simple smoothing function with short period
+        %separate subsurface light field into layers
+        sub1 = smooth(intensity2(:,1),4);
+        sub2 = smooth(intensity2(:,2),4);
+        sub3 = smooth(intensity2(:,3),4);
+        sub4 = smooth(intensity2(:,4),4);
+        sub5 = smooth(intensity2(:,5),4);
+
+        sub1_tot = sum(sub1);
+        sub2_tot = sum(sub2);
+        sub3_tot = sum(sub3);
+        sub4_tot = sum(sub4);
+        sub5_tot = sum(sub5);
+        sub_tot_line = [sub1_tot,sub2_tot,sub3_tot,sub4_tot,sub5_tot];
+        depths = [dz(1),dz(1)+dz(2),dz(1)+dz(2)+dz(3),dz(1)+dz(2)+dz(3)+dz(4), dz(1)+dz(2)+dz(3)+dz(4)+dz(5)];
+
+        % make a plot of spectrally-resolved albedo:
+        plot(wvl,albedo,'linewidth',2);
+        xlabel('Wavelength (\mum)','fontsize',20);
+        ylabel('Albedo','fontsize',20);
+        set(gca,'xtick',0:0.1:5,'fontsize',16);
+        set(gca,'ytick',0:0.1:1.0,'fontsize',16);
+        xlim([0.3 2.5])
+        ylim([0,1])
+        grid on;
+        hold on;
+
+
+        "********* REPORTING BROADBAND ALBEDO ETC ******* "
+        % uncomment to print values to command window
+
+        alb_slr % albedo over solar spectrum
+        flx_abs_snw; % absorbed energy in the snowpack
+        heat_rt; % radiative heating rate in K/hr
+        actinic_flux_top = sub1_tot;
+
+        snow_depth = sum(dz); % depth of snowpack incorporating all layers
+        temp_grad = ((heat_rt(1) - heat_rt(end)))/snow_depth; % temperature gradient through snowpack
+
     end
-
-    if Mie == 1
-        
-            data_in = snicar8d_Mie(BND_TYP, DIRECT, APRX_TYP, DELTA, coszen, R_sfc, ...
-            dz, rho_snw, rds_snw, nbr_aer, mss_cnc_sot1, ...
-            mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
-            mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
-    end
-
-    % process input data:   
-    wvl         = data_in(:,1);   % wavelength grid
-    albedo      = data_in(:,2);   % spectral albedo
     
-    
-    % do not allow albedo to drop below 0
-
-%     for i = 1:1:length(albedo)
-%         if albedo(i) <= 0;
-%             albedo(i) = 0.0000001;
-%         end
-%     end
-    
-    alb_slr     = data_in(1,3);   % broadband albedo (0.3-5.0um)
-    alb_vis     = data_in(2,3);   % visible albedo (0.3-0.7um)
-    alb_nir     = data_in(3,3);   % near-IR albedo (0.7-5.0um)
-    flx_abs_snw = data_in(4,3);   % total radiative absorption by all snow layers (not including underlying substrate)
-    flx_abs(1)     = data_in(6,4); % top layer solar absorption
-    flx_vis_abs(1) = data_in(7,4); % top layer VIS absorption
-    flx_nir_abs(1) = data_in(8,4); % top layer NIR absorption
-    heat_rt = data_in([1:5],6); % heating rate per layer K/hr
-    F_abs = [data_in(6,4),data_in(9,4),data_in(12,4),data_in(15,4),data_in(18,4)]; % absorbed energy per layer (W/m2)
-    intensity2 = data_in([1:470],[7:11]);
-    
-    %albedo = smooth(albedo,0.005); % add a simple smoothing function with short period
-    %separate subsurface light field into layers
-    sub1 = smooth(intensity2(:,1),4);
-    sub2 = smooth(intensity2(:,2),4);
-    sub3 = smooth(intensity2(:,3),4);
-    sub4 = smooth(intensity2(:,4),4);
-    sub5 = smooth(intensity2(:,5),4);
-
-    sub1_tot = sum(sub1);
-    sub2_tot = sum(sub2);
-    sub3_tot = sum(sub3);
-    sub4_tot = sum(sub4);
-    sub5_tot = sum(sub5);
-    sub_tot_line = [sub1_tot,sub2_tot,sub3_tot,sub4_tot,sub5_tot];
-    depths = [dz(1),dz(1)+dz(2),dz(1)+dz(2)+dz(3),dz(1)+dz(2)+dz(3)+dz(4), dz(1)+dz(2)+dz(3)+dz(4)+dz(5)];
-
-    figure(1);
-
-    % make a plot of spectrally-resolved albedo:
-    plot(wvl,albedo,'linewidth',2);
-    xlabel('Wavelength (\mum)','fontsize',20);
-    ylabel('Albedo','fontsize',20);
-    set(gca,'xtick',0:0.1:5,'fontsize',16);
-    set(gca,'ytick',0:0.1:1.0,'fontsize',16);
-    xlim([0.3 2.5])
-    ylim([0,1])
-    grid on;
-    hold on;
-
-    % plot subsurface light field
-    figure(2);
-    hold on
-    plot(wvl, sub1, 'DisplayName','0 - 0.3 cm');
-    plot(wvl, sub2','DisplayName','0.3 - 1.3 cm');
-    plot(wvl, sub3,'DisplayName','1.3 - 3.3 cm');
-    plot(wvl, sub4,'DisplayName','3.3 - 5.3 cm');
-    plot(wvl, sub5,'DisplayName','5.3 - 7.3 cm');
-    xlabel('Wavelength (\mum)','fontsize',20);
-    ylabel('Planar Intensity Wm-2','fontsize',20);
-    xlim([0.3 2.5]);
-    ylim([0 0.03]);
-    set(gca,'xtick',0:0.1:5,'fontsize',16);
-    set(gca,'ytick',0:0.01:0.1,'fontsize',16);
-    legend;
-
-    %plot total energy actinic flux against depth
-    figure(3);
-    plot(depths,sub_tot_line);
-    xlabel('Depth beneath surface (m)','fontsize',20);
-    ylabel('planar intensity (Wm-2)','fontsize',20);
-    set(gca,'xtick',0:0.01:0.1,'fontsize',16);
-    set(gca,'ytick',0:0.1:1,'fontsize',16);
-    hold on
-
-    
-    "********* REPORTING BROADBAND ALBEDO ETC ******* "
-    % uncomment to print values to command window
-
-    alb_slr % albedo over solar spectrum
-    flx_abs_snw; % absorbed energy in the snowpack
-    heat_rt; % radiative heating rate in K/hr
-    actinic_flux_top = sub1_tot;
-
-    snow_depth = sum(dz); % depth of snowpack incorporating all layers
-    temp_grad = ((heat_rt(1) - heat_rt(end)))/snow_depth; % temperature gradient through snowpack
-
-end
 end

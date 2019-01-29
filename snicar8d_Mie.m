@@ -339,7 +339,7 @@ for n=1:nbr_lyr
     omega(:,n) = (1./tau(:,n)).*(omega_sum+ (omega_snw(:,n).*tau_snw(:,n)));
     g(:,n)     = (1./(tau(:,n).*omega(:,n))) .* (g_sum+ (g_snw(:,n).*omega_snw(:,n).*tau_snw(:,n)));
 end
-  
+
   
 % Perform Delta-transformations, if called for
 if (DELTA == 1)
