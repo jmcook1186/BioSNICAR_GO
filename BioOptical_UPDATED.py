@@ -129,7 +129,7 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
             Ea5n.append(Ea5[i])
             WatRIn.append(WatRI[i])
     
-        # copy water RI over zeros at non-absorbing wavTrueelengths
+        # copy water RI over zeros at non-absorbing wavelengths
         Ea1n[44:-1] = WatRIn[44:-1]
         Ea2n[44:-1] = WatRIn[44:-1]
         Ea3n[44:-1] = WatRIn[44:-1]
@@ -240,8 +240,8 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, cell_dm_weight 
 
 # NB pigment data is provided here in units of mg per cell      
 k_list, MAC, data = bio_optical(
-        load_MAC= False, 
-        calc_MAC = True, 
+        load_MAC= True, 
+        calc_MAC = False, 
         calc_k = True, 
         cell_dm_weight=1.99, # unit = ng
         chla = 3.51E-9, 
@@ -252,7 +252,7 @@ k_list, MAC, data = bio_optical(
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
-        savefiles = False, 
+        savefiles = True, 
         savefilename = "CW_bio_1", 
         date = "15th July 2016",
         plot_figs = True)

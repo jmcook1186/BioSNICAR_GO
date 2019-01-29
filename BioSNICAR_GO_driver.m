@@ -115,8 +115,8 @@ snw_stb1 = 'snw_alg_'; % name stub for snow algae
 
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 1
-algae_r = 4; % algae radius
-algae_l = 10; % algae length
+algae_r = 6; % algae radius
+algae_l = 60; % algae length
 glacier_algae1 = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2); % create filename string
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 2
@@ -140,7 +140,7 @@ for x = [0]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [50000,0,0,0,0];    % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
@@ -148,7 +148,7 @@ mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 3
 mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
-mss_cnc_snw_alg(1:nbr_lyr)  = [50000,0,0,0,0];    % Snow Algae (spherical, C nivalis)
+mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
 mss_cnc_glacier_algae1(1:nbr_lyr) = [520000,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
