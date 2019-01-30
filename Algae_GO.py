@@ -70,74 +70,63 @@ filepath = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Props/'
 
 
 def preprocess_RI():
-    
-    wavelengths = np.arange(0.305,5,0.01)
-    
-    reals = pd.read_csv('/home/joe/Desktop/Machine_Learn_Tutorial/Algae_GO/temp_real.csv',header=None)
-    reals = reals[0:4695]
-    reals = reals[0:-1:10]
-    reals=np.array(reals)
-    
-    imags = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_1_KK.csv',header=None)
+    # load input files for real RI, imaginary RI, mass absorption coefficient. Set wavelength array.
+    wavelengths = np.arange(0.305,5,0.01) # 300 - 5000 nm in 10 nm steps
+    reals = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_Real.csv',header=None)
+    reals = np.array(reals)
+    imags = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_KK.csv',header=None)
     imags=np.array(imags)
-    
-    MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/CW_bio_1_MAC.csv',names = ['vals'], header=None, index_col=None)
+    MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_MAC.csv',names = ['vals'], header=None, index_col=None)
     MAC = np.array(MAC['vals'])
     
     return reals, imags, MAC, wavelengths
 
-
-
 def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims = False):
-    
+    # set up lists
     SSA_list = []
     Assy_list = []
     absXS_list = []
-    MAC_list = []
     Chi_abs_list = []
     X_list = []
-    density = 1400
+
+    # calculate cylinder dimensions
     diameter = 2*r
     V = depth*(np.pi*r**2)    # volume of cylinder
     Reff = (V/((4/3)*np.pi))**1/3  # effective radius (i.e. radius of sphere with equal volume to real cylinder)
-    Area_total = 2*(np.pi*r**2)+(2*np.pi*r)*(depth)  #total surface area - 2 x ends plus circumference * length 
-    #Area = np.mean((np.pi*r**2,diameter*depth))   # projected area
-    Area = Area_total/4           
-    ar = diameter/depth
+    Area_total = 2*(np.pi*r**2)+(2*np.pi*r)*(depth) # total surface area - 2 x ends plus circumference * length
+    Area = Area_total/4 # projected area
+    ar = diameter/depth # aspect ratio
     delta = 0.3
-    
+
+    #start geometric optics calculation per wavelength
     for i in np.arange(0,len(wavelengths),1):
-      
-        mr = reals[i]
-        mi = imags[i]
-        wl = wavelengths[i]
-        
-        #------------------------------------------------
-        #---------- input tables (see Figs. 4 and 7) ----
-        #------------------------------------------------
+        mr = reals[i] # load real RI per wavelength
+        mi = imags[i] # load imaginary RI per wavelength
+        wl = wavelengths[i] # loadd wavelength
+
         # SSA parameterization
-        a = [  0.457593 ,  20.9738 ] #for ar=1
+        a = [0.457593, 20.9738] #for ar=1
         
         # SSA correction for AR != 1 (Table 2)
         nc1 = 3
         nc2 = 4
         c_ij = np.zeros(nc1*nc2*2).reshape((nc1,nc2,2))
-        #   ---------- Plates ----------  
-        c_ij[:,0,0] = [  0.000527060 ,  0.309748   , -2.58028  ]
-        c_ij[:,1,0] = [  0.00867596  , -0.650188   , -1.34949  ]
-        c_ij[:,2,0] = [  0.0382627   , -0.198214   , -0.674495 ]
-        c_ij[:,3,0] = [  0.0108558   , -0.0356019  , -0.141318 ]
+        #   ---------- Plates ----------
+        c_ij[:,0,0] = [0.000527060,0.309748,-2.58028]
+        c_ij[:,1,0] = [0.00867596,-0.650188,-1.34949]
+        c_ij[:,2,0] = [0.0382627,-0.198214,-0.674495]
+        c_ij[:,3,0] = [0.0108558,-0.0356019,-0.141318]
         #   --------- Columns ----------
-        c_ij[:,0,1] = [  0.000125752 ,  0.387729   , -2.38400  ]
-        c_ij[:,1,1] = [  0.00797282  ,  0.456133   ,  1.29446  ]
-        c_ij[:,2,1] = [  0.00122800  , -0.137621   , -1.05868  ]
-        c_ij[:,3,1] = [  0.000212673 ,  0.0364655  ,  0.339646 ]
+        c_ij[:,0,1] = [0.000125752,0.387729,-2.38400]
+        c_ij[:,1,1] = [0.00797282,0.456133,1.29446]
+        c_ij[:,2,1] = [0.00122800,-0.137621,-1.05868]
+        c_ij[:,3,1] = [0.000212673,0.0364655,0.339646]
         
         # diffraction g parameterization
-        b_gdiffr = [ -0.822315 , -1.20125    ,  0.996653 ]
+        b_gdiffr = [-0.822315,-1.20125,0.996653]
         
         # raytracing g parameterization ar=1
-        p_a_eq_1 = [  0.780550 ,  0.00510997 , -0.0878268 ,  0.111549 , -0.282453 ]
+        p_a_eq_1 = [0.780550,0.00510997,-0.0878268,0.111549,-0.282453]
         
         #---- g correction for AR != 1 (Also applied to AR=1 as plate) (Table 3)
         nq1 = 3
@@ -160,32 +149,29 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         q_ij[:,5,1] = [ -0.707187    , -0.374173    ,  1.01287    ]
         q_ij[:,6,1] = [  0.125276    ,  0.0721572   , -0.186466   ]
         
-        #--------- refractive index correction of asymmetry parameter
+        #refractive index correction of asymmetry parameter
         c_g = np.zeros(4).reshape(2,2)
-        c_g[:,0] = [  0.96025050 ,  0.42918060 ]
-        c_g[:,1] = [  0.94179149 , -0.21600979 ]
-        #---- correction for absorption 
-        s = [  1.00014  ,  0.666094 , -0.535922 , -11.7454 ,  72.3600 , -109.940 ]
-        u = [ -0.213038 ,  0.204016 ]
+        c_g[:,0] = [0.96025050, 0.42918060]
+        c_g[:,1] = [0.94179149,-0.21600979]
+        #correction for absorption
+        s = [1.00014 ,0.666094,-0.535922,-11.7454,72.3600,-109.940]
+        u = [-0.213038,0.204016]
         
         # -------- selector for plates or columns
         if ar > 1.:
             col_pla = 1 #columns
         else:
             col_pla = 0 #plates & compacts
-            
-        #------------------------------------------------
+
         #------------ Size parameters -------------------
-        #------------------------------------------------
-        
+
         #--- absorption size parameter (Fig. 4, box 1)
         Chi_abs = mi/wl*V/Area
         #----- scattering size parameter (Fig. 7, box 1)
         Chi_scat = 2.*np.pi*np.sqrt(Area/np.pi)/wl
         
-        #------------------------------------------------
+
         #------------ SINGLE SCATTERING ALBEDO ----------
-        #------------------------------------------------
         
         if Chi_abs > 0:
             w_1= 1.- a[0] * (1.-np.exp(-Chi_abs*a[1]))  #for AR=1 (Fig. 4, box 2)
@@ -195,10 +181,8 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
             w = w_1 + D_w #(Fig. 4, box 4)
         else:
             w = 1.
-        
-        #------------------------------------------------
+
         #--------------- ASYMMETRY PARAMETER ------------
-        #------------------------------------------------
         
         # diffraction g
         g_diffr = b_gdiffr[0] * np.exp(b_gdiffr[1]*np.log(Chi_scat)) + b_gdiffr[2] #(Fig. 7, box 2)
@@ -237,7 +221,8 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
         
         absXS = ((1-(np.exp(-4*np.pi*mi*V/Area*wavelengths[i])))*Area) 
         X = (2*np.pi*Reff)/wl
-        
+
+        # append values to output lists
         X_list.append(X)
         Chi_abs_list.append(Chi_abs)
         SSA_list.append(w)
@@ -268,7 +253,7 @@ def calc_optical_params(r,depth,reals,imags,wavelengths,plots=False,report_dims 
     return Assy_list,SSA_list,absXS_list,MAC,depth,r,Chi_abs_list,Reff,X_list
 
 
-def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
+def net_cdf_updater(filepath,Assy_list,SSA_list,MAC,depth,r,density):
     
     algfile = pd.DataFrame()
     algfile['asm_prm'] = np.squeeze(Assy_list)
@@ -278,9 +263,9 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density):
     algfile.attrs['medium_type'] = 'air'
     algfile.attrs['description'] = 'Optical properties for algal cell: cylinder of radius {}um and length {}um'.format(str(r),str(depth)) 
     algfile.attrs['psd'] = 'monodisperse'
-    algfile.attrs['radius'] = r
-    algfile.attrs['side_length'] = depth
-    algfile.attrs['density'] = density
+    algfile.attrs['radius_um'] = r
+    algfile.attrs['side_length_um'] = depth
+    algfile.attrs['density_kg/m3'] = density
     algfile.attrs['origin'] = 'Optical properties derived from geometrical optics calculations (algae_go.py) with empirically derived MAC'
     algfile.to_netcdf(str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth))))
     
