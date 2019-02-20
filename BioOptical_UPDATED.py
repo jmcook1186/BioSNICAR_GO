@@ -31,6 +31,7 @@ Created on Fri Jul 20 15:24:05 2018
 
 # INPUT PARAMETERS
 # load_MAC: if True, MAC loaded from external file
+# apply_packaging_correction: correct the MAC for packaging effects using a wavelength dependent correction factor (CW)
 # calc_MAC: If true, MAC calculated theoretically
 # calc_k: if True, script calculates refractive index
 # pig_mass: if True, pigment data should be provided as absolute mass of pigment per cell (mg)
@@ -58,10 +59,10 @@ import matplotlib.pyplot as plt
 import csv
 import pandas as pd
 
-def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = False, calc_k = True, pig_mass = True, pig_frac = False, Pottier = False,
-                Cook = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0,
-                purp = 0.068, Xw = 0.8, density= 1400, nm = 1.4, savefiles = False, savepath = "path",
-                savefilename = "name", plot_figs = True):
+def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = False, calc_k = True, pig_mass = True,
+                pig_frac = False, Pottier = False, Cook = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066,
+                ppro = 0.01, psyn = 0, purp = 0.068, Xw = 0.8, density= 1400, nm = 1.4, savefiles = False,
+                savepath = "path", savefilename = "name", plot_figs = True):
 
     data = pd.DataFrame() # set up dataframe
 
@@ -96,6 +97,8 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         WatRIn = []
         k_list = []
         real_list = []
+        MACcorr = []
+        MACcorrn = []
     
         # Read in wavelength dependent in vivo absorption coefficients for each pigment
         # and define wavelength range
@@ -144,8 +147,18 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
                 for cell in row:
                     cellf = float(cell)
                     WatRI.append(cellf)
-    
-    
+        # read in correction factor for packaging effect (from Chris W paper)
+        with open('/home/joe/Code/BioSNICAR_GO/phenol_mac_correction.csv')as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                for cell in row:
+                    cellf = float(cell)
+                    MACcorr.append(cellf)
+
+        MACcorr = MACcorr[19:-1] # remove wavelengths <300nm
+        for i in np.arange(len(MACcorr),750,1): # ensure list length = 750
+            MACcorr.append(1)
+
        # extend spectral data down to 300nm by padding with the value at 350nm and
        # small but non-zero value above 750 nm (avoid divide by zero errors)    
         Ea1 = [Ea1[0] for _ in range(50)] + Ea1
@@ -160,6 +173,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             Ea3.append(0)
             Ea4.append(0)
             Ea5.append(0)
+            MACcorr.append(1)
     
         # downsample to match SNICAR resolution) 
         for i in np.arange(1,len(Ea1),10):
@@ -169,7 +183,11 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             Ea4n.append(Ea4[i])
             Ea5n.append(Ea5[i])
             WatRIn.append(WatRI[i])
-    
+            MACcorrn.append(MACcorr[i])
+
+        if apply_packaging_correction:
+            Ea5n = [Ea5n[i] * MACcorrn[i] for i in np.arange(0,len(MACcorrn)-1,1)]
+
         # copy water RI over zeros at non-absorbing wavelengths
         Ea1n[44:-1] = WatRIn[44:-1]
         Ea2n[44:-1] = WatRIn[44:-1]
@@ -180,11 +198,11 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
     if calc_MAC:
         if pig_frac:
         # if data was provided as mass fraction convert percentage dw pigment to actual mass of pigment per cell (mg)
-           chla_w = chla * cell_dm_weight*1e-6
-           chlb_w = chlb * cell_dm_weight*1e-6
-           ppro_w = ppro * cell_dm_weight*1e-6
-           psyn_w = psyn * cell_dm_weight*1e-6
-           purp_w = purp * cell_dm_weight*1e-6
+            chla_w = chla * cell_dm_weight*1e-6
+            chlb_w = chlb * cell_dm_weight*1e-6
+            ppro_w = ppro * cell_dm_weight*1e-6
+            psyn_w = psyn * cell_dm_weight*1e-6
+            purp_w = purp * cell_weight_dm * 1e-6
 
         elif pig_mass:
         # If data was provided in units of mg pigment/cell, read in from file.
@@ -193,6 +211,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             ppro_w = ppro
             psyn_w = psyn
             purp_w = purp
+
         
         # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
         # at each wavelenth giving units of m2 per cell
@@ -278,9 +297,9 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
 
 # NB pigment data is provided here in units of mg per cell      
 k_list, real_list, MAC, data = bio_optical(
-        load_MAC= True,
+        load_MAC= False,
         apply_packaging_correction=True,
-        calc_MAC = False, 
+        calc_MAC = True,
         calc_k = True,
         pig_mass = True,
         pig_frac = False,
@@ -295,7 +314,7 @@ k_list, real_list, MAC, data = bio_optical(
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
-        savefiles = True,
+        savefiles = False,
         savepath = '/home/joe/Code/BioSNICAR_GO/',
         savefilename = "Alg_optics_1",
         plot_figs = True)
