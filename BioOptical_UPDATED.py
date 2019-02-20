@@ -4,55 +4,64 @@
 Created on Fri Jul 20 15:24:05 2018
 
 @author: joe
+
+This code predicts the refractive index and mass absorption coefficient of cylindrical algal cells whose pigment
+profile is known. There are several ways to run this script, offering blends of theoretical and empirical
+pigment data. The user must first select whether the mass absorption coefficient of the algal cel is to be
+calculated from the absorption coefficients of the individual pigments and user defined pigment profile, or whether
+the mass absorption coefficient should be loaded in from an external file. The latter option is used to provide
+values derived from empirical measurements. This is achieved by setting either calc_MAC or load_MAC to true and the other
+to False in the function call.
+
+The pigment profile can then be provided as actual mass of pigment (ng) per cell along with the mass of the cell (ng)
+or provided as a mass fraction (% total cellular dry weight). This is achieved by setting pig_mass or pig_frac to True
+and the other to False in the function call. There is also an option to apply a correction for packaging effects in
+the cell. If thr MAC is loaded in from an external file, setting apply_packaging_correction = True loads in a different
+csv file where the correction has already been applied. If the MAC is being calculated on-the-fly then the correction
+factor per wavelength is loaded in for an element-wise multiplication of the MAC and the correction factor.
+
+The script will then return the cell MAC (m2/kg) and refractive index (dimensionless). The refractive index is
+predicted using a mixing model adapted from Pottier et al (2005), Dauchet et al (2015) and Cook et al (2017).
+
+Both the MAC and refractive index are required for the script "Algae_GO.py" to calculate single scattering optical properties
+that enable the algae to be incorporated as an impurity in BioSNICAR_GO. The paths in this script are set so that files
+are automatically saved in directories accessible to Algae_Go.py. Any changes to paths should also be updated in
+Algae_GO.py.
+
+Together, this script and Algae_GO.py populate BioSNICAR_GO's lookup library of netCDF algal optical properties.
+
+*****************************************************************************************************************
+*** NB STRONGLY RECOMMEND EMPIRICAL MAC IS LOADED IN FROM FILE AND CORRECTED FOR PACKAGING EFFECTS AS DEFAULT ***
+********************* ALSO SUGGEST PROVIDING MEASURED MASS OF PIGMENT IN MG WHERE POSSIBLE **********************
+*****************************************************************************************************************
+
+INPUT PARAMETERS:
+
+load_MAC: if True, MAC loaded from external file
+apply_packaging_correction: correct the MAC for packaging effects using a wavelength dependent correction factor (CW)
+calc_MAC: If true, MAC calculated theoretically
+calc_k: if True, script calculates refractive index
+pig_mass: if True, pigment data should be provided as absolute mass of pigment per cell (mg)
+pig_frac: if True, pigment data should be provided as mass fraction of pigment per cell (% total dry weight)
+Pottier: If true, use Pottier et al's (2005) equation to predict the imaginary refractive index
+Cook: If true, use Cook et al's (2019) updated equation to predict the imaginary refractive index
+cell_dm_weight: provide dry weight of cell in ng
+chla,chlb,ppro,psyn,purp: either mass (mg) or mass fraction of each pigment in cell
+Xw: water fraction, set to 0.8 as default
+density: density of dry cellular material in kg/m3, set to 1400 as default
+nm: real part of refractive index, set to 1.4 as default
+savefiles: if True, the data will be saved as a csv file to path specified in savefilename
+savefilename: path to save files
+plot_title: title for plots
+plot_figs: if true, k and MAC plotted in ipython console
+
+OUTPUTS:
+
+k_list: imaginary refractive index per unit wavelength from 300-5000 nm in at 10nm resolution
+MAC: mass absorption coefficient per unit wavelength from 300-5000 nm at 10nm resolution
+data: pandas dataframe containing nm, MAC, k per unit wavelength from 300 - 5000 nm at 10nm resolution
+
 """
-
-# This code predicts the refractive index and mass absorption coefficient of cylindrical algal cells whose pigment
-# profile is known. There are several ways to run this script, offering blends of theoretical and empirical
-# pigment data. The user must first select whether the mass absorption coefficient of the algal cel is to be
-# calculated from the absorption coefficients of the individual pigments and user defined pigment profile, or whether
-# the mass absorption coefficient should be loaded in from an external file. The latter option is used to provide
-# values derived from empirical measurements. This is achieved by setting either calc_MAC or load_MAC to true and the other
-# to False in the function call.
-
-# The pigment profile can then be provided as actual mass of pigment (ng) per cell along with the mass of the cell (ng)
-# or provided as a mass fraction (% total cellular dry weight). This is achieved by setting pig_mass or pig_frac to True
-# and the other to False in the function call.
-
-# The script will then return the cell MAC (m2/kg) and refractive index (dimensionless). The refractive index is
-# predicted using a mixing model adapted from Pottier et al (2005), Dauchet et al (2015) and Cook et al (2017).
-
-# Both the MAC and refractive index are required for the script "Algae_GO.py" to calculate single scattering optical properties
-# that enable the algae to be incorporated as an impurity in BioSNICAR_GO. The paths in this script are set so that files
-# are automatically saved in directories accessible to Algae_Go.py. Any changes to paths should also be updated in
-# Algae_GO.py.
-
-# Together, this script and Algae_GO.py populate BioSNICAR_GO's lookup library of netCDF algal optical properties.
-
-
-# INPUT PARAMETERS
-# load_MAC: if True, MAC loaded from external file
-# apply_packaging_correction: correct the MAC for packaging effects using a wavelength dependent correction factor (CW)
-# calc_MAC: If true, MAC calculated theoretically
-# calc_k: if True, script calculates refractive index
-# pig_mass: if True, pigment data should be provided as absolute mass of pigment per cell (mg)
-# pig_frac: if True, pigment data should be provided as mass fraction of pigment per cell (% total dry weight)
-# Pottier: If true, use Pottier et al's (2005) equation to predict the imaginary refractive index
-# Cook: If true, use Cook et al's (2019) updated equation to predict the imaginary refractive index
-# cell_dm_weight: provide dry weight of cell in ng
-# chla,chlb,ppro,psyn,purp: either mass (mg) or mass fraction of each pigment in cell
-# Xw: water fraction, set to 0.8 as default
-# density: density of dry cellular material in kg/m3, set to 1400 as default
-# nm: real part of refractive index, set to 1.4 as default
-# savefiles: if True, the data will be saved as a csv file to path specified in savefilename
-# savefilename: path to save files
-# plot_title: title for plots
-# plot_figs: if true, k and MAC plotted in ipython console
-
-# OUTPUTS
-# k_list: imaginary refractive index per unit wavelength from 300-5000 nm in at 10nm resolution
-# MAC: mass absorption coefficient per unit wavelength from 300-5000 nm at 10nm resolution
-# data: pandas dataframe containing nm, MAC, k per unit wavelength from 300 - 5000 nm at 10nm resolution
-
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,11 +73,11 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
                 ppro = 0.01, psyn = 0, purp = 0.068, Xw = 0.8, density= 1400, nm = 1.4, savefiles = False,
                 savepath = "path", savefilename = "name", plot_figs = True):
 
-    data = pd.DataFrame() # set up dataframe
+    data = pd.DataFrame() # set up dataframe for storing optical properties
 
     if load_MAC: # choose this option to load an empirically derived MAC from file
 
-        if apply_packaging_correction:
+        if apply_packaging_correction: # optionally apply correction for packaging effect
             MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/phenol_mac_packaging_corr.csv',header=None,names=['MAC'])
             MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
             MAC = MAC[0:-1:10]
@@ -195,7 +204,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         Ea4n[44:-1] = WatRIn[44:-1]
         Ea5n[44:-1] = WatRIn[44:-1]
             
-    if calc_MAC:
+    if calc_MAC: # if MAC is calculated on-the-fly using theoretical approach
         if pig_frac:
         # if data was provided as mass fraction convert percentage dw pigment to actual mass of pigment per cell (mg)
             chla_w = chla * cell_dm_weight*1e-6
@@ -212,7 +221,6 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             psyn_w = psyn
             purp_w = purp
 
-        
         # Multiply mass of each pigment (mg) by absorption coefficient (m2/mg)
         # at each wavelenth giving units of m2 per cell
         EW1m = [a * chla_w for a in Ea1n]
@@ -220,19 +228,15 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         EW3m = [a * ppro_w for a in Ea3n]
         EW4m = [a * psyn_w for a in Ea4n]
         EW5m = [a * purp_w for a in Ea5n]
-        
-        # Sum all pigments (m2)
-        EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] 
-        
+
+        EWWm = [sum(x) for x in zip(EW1m,EW2m,EW3m,EW4m,EW5m)] # Sum all pigments (m2)
         MAC = [(i/cell_dm_weight)*1e12 for i in EWWm] #normalise from cell to mass (x 1e12 to get m3/kg)
-        
         data['MAC'] = MAC # save to dataframe
 
-    if calc_k:
-        if pig_frac:
+    if calc_k: # to calculate imaginary refractive index for the cell
+        if pig_frac: # if pigment values are provided as a mass fraction
         # follow Pottier 2005 / Dauchet (2015) / Cook et al (2017) route to imaginary RI
         # multiply pigment MAC by % dw and convert from m2/mg to m2/kg
-
            EW1 = [a * 1e6 * chla for a in Ea1n]
            EW2 = [a * 1e6 * chlb for a in Ea2n]
            EW3 = [a * 1e6 * ppro for a in Ea3n]
@@ -241,7 +245,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
            EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)] # Sum all pigments
         
 
-        else:
+        else: # if pigment values are provided as absolute mass (mg)
         # if data provided in mg pigment per cell, divide by cell weight in mg
         # to get mass fraction. multiply by pigment MAC (x 1e6 = m2/kg)
             chla_frac = chla/(cell_dm_weight*1e-6)
@@ -256,13 +260,12 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             EW4 = [a  * 1e6 * psyn_frac for a in Ea4n]
             EW5 = [a  * 1e6 * purp_frac for a in Ea5n]
             EWW = [sum(x) for x in zip(EW1,EW2,EW3,EW4,EW5)] # Sum all pigments
-        
 
         # Calculate imaginary refractive index (k)
         for i in np.arange(0,len(WL),1):
-            if Pottier:
+            if Pottier: # Pottier et al (2005) equation
                 k = (((1 - Xw) / Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) #original Pottier equation
-            elif Cook:
+            elif Cook: # Cook et al (2019) update
                 k = (Xw * WatRIn[i]) + ((1 - Xw) * (WLmeters[i]/np.pi*4) * density * EWW[i]) # Cook (2018) updated version
             k_list.append(k)
             real_list.append(nm)
@@ -270,7 +273,6 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         data['Imag'] = k_list # append imaginary RI to dataframe
         data['Real'] = real_list # append real RI to dataframe
 
-        
     if savefiles: # optional save dataframe to csv files
         data.to_csv(str(savepath+'{}_Dataset.csv'.format(savefilename)))
         data['Imag'].to_csv(str(savepath+'{}_KK.csv'.format(savefilename)),header=None,index=False)
@@ -278,7 +280,6 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         data['Real'].to_csv(str(savepath+'{}_Real.csv'.format(savefilename)),header=None,index=False)
 
     if plot_figs:
-
         plt.figure(figsize=(10,15))
         plt.subplot(2,1,1)
         plt.plot(WL[0:220],MAC[0:220]),plt.xlim(300,750)
@@ -292,10 +293,10 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
         plt.tight_layout()
 
-    
         return k_list, real_list, MAC, data
 
-# NB pigment data is provided here in units of mg per cell      
+
+# NB pigment data is provided here in units of mg per cell
 k_list, real_list, MAC, data = bio_optical(
         load_MAC= False,
         apply_packaging_correction=True,
