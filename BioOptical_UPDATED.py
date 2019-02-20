@@ -58,7 +58,7 @@ import matplotlib.pyplot as plt
 import csv
 import pandas as pd
 
-def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, pig_mass = True, pig_frac = False, Pottier = False,
+def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = False, calc_k = True, pig_mass = True, pig_frac = False, Pottier = False,
                 Cook = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066, ppro = 0.01, psyn = 0,
                 purp = 0.068, Xw = 0.8, density= 1400, nm = 1.4, savefiles = False, savepath = "path",
                 savefilename = "name", plot_figs = True):
@@ -66,11 +66,19 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, pig_mass = True
     data = pd.DataFrame() # set up dataframe
 
     if load_MAC: # choose this option to load an empirically derived MAC from file
-        MAC = pd.read_csv('/home/joe/Desktop/CW_BioSNICAR_Experiment/Empirical_MAC.csv',header=None,names=['MAC'])
-        MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
-        MAC = MAC[0:-1:10]
-        data['MAC'] = MAC['MAC'].dropna() # drop NaNs and save to dataframe
-    
+
+        if apply_packaging_correction:
+            MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/phenol_mac_packaging_corr.csv',header=None,names=['MAC'])
+            MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
+            MAC = MAC[0:-1:10]
+            data['MAC'] = MAC['MAC'].dropna() # drop NaNs and save to dataframe
+
+        else:
+            MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Empirical_MAC.csv',header=None,names=['MAC'])
+            MAC = MAC[0:4695] # subsample to appropriate resolution for snicar
+            MAC = MAC[0:-1:10]
+            data['MAC'] = MAC['MAC'].dropna() # drop NaNs and save to dataframe
+
     if calc_MAC or calc_k: # choose this option to calculate MAC or k theoretically
         # set up empty lists
         WL = []
@@ -270,13 +278,14 @@ def bio_optical(load_MAC = True, calc_MAC = True, calc_k = True, pig_mass = True
 
 # NB pigment data is provided here in units of mg per cell      
 k_list, real_list, MAC, data = bio_optical(
-        load_MAC= True, 
+        load_MAC= True,
+        apply_packaging_correction=True,
         calc_MAC = False, 
         calc_k = True,
         pig_mass = True,
         pig_frac = False,
-        Pottier = True,
-        Cook = False,
+        Pottier = False,
+        Cook = True,
         cell_dm_weight= 1.89,
         chla = 3.51E-9, 
         chlb = 4.52E-9, 

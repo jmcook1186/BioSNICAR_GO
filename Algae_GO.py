@@ -265,7 +265,7 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,MAC,depth,r,density):
     algfile.attrs['psd'] = 'monodisperse'
     algfile.attrs['radius_um'] = r
     algfile.attrs['side_length_um'] = depth
-    algfile.attrs['density_kg/m3'] = density
+    algfile.attrs['density_kg_m3'] = density
     algfile.attrs['origin'] = 'Optical properties derived from geometrical optics calculations (algae_go.py) with empirically derived MAC'
     algfile.to_netcdf(str(filepath+'algae_geom_{}_{}.nc'.format(str(r),str(depth))))
     
@@ -276,11 +276,11 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,MAC,depth,r,density):
 
 reals,imags,MAC, wavelengths = preprocess_RI()
 Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(6,120,reals,imags,wavelengths,plots=True,report_dims = True)
-net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC,depth,r,density=1400)
+net_cdf_updater(filepath,Assy_list,SSA_list,MAC,depth,r,1400)
 
 
 #for r in np.arange(1,7,1):
 #    for depth in np.arange(1,41,1):
 #            reals, imags, MAC, wavelengths = preprocess_RI()
 #            Assy_list,SSA_list,absXS_list,MAC_list,depth,r,Chi_abs_list,Reff,X_list = calc_optical_params(r,depth,reals,imags,wavelengths,plots=True,report_dims = True)
-#            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,r,density=1400)
+#            net_cdf_updater(filepath,Assy_list,SSA_list,MAC_list,depth,r,1400)
