@@ -53,7 +53,8 @@ nm: real part of refractive index, set to 1.4 as default
 savefiles: if True, the data will be saved as a csv file to path specified in savefilename
 savefilename: path to save files
 plot_title: title for plots
-plot_figs: if true, k and MAC plotted in ipython console
+plot_optical_props: if true, k and MAC plotted in ipython console
+plot_pigment_MACs: if true, the mass absorption coefficient of each pigment is plotted to ipython console
 
 OUTPUTS:
 
@@ -71,7 +72,7 @@ import pandas as pd
 def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = False, calc_k = True, pig_mass = True,
                 pig_frac = False, Pottier = False, Cook = True, cell_dm_weight = 0.82, chla = 0.01, chlb = 0.00066,
                 ppro = 0.01, psyn = 0, purp = 0.068, Xw = 0.8, density= 1400, nm = 1.4, savefiles = False,
-                savepath = "path", savefilename = "name", plot_figs = True):
+                savepath = "path", savefilename = "name", plot_optical_props = True, plot_pigment_MACs = True):
 
     data = pd.DataFrame() # set up dataframe for storing optical properties
 
@@ -211,7 +212,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             chlb_w = chlb * cell_dm_weight*1e-6
             ppro_w = ppro * cell_dm_weight*1e-6
             psyn_w = psyn * cell_dm_weight*1e-6
-            purp_w = purp * cell_weight_dm * 1e-6
+            purp_w = purp * cell_weight_dm*1e-6
 
         elif pig_mass:
         # If data was provided in units of mg pigment/cell, read in from file.
@@ -279,7 +280,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         data['MAC'].to_csv(str(savepath+'{}_MAC.csv'.format(savefilename)),header=None,index=False)
         data['Real'].to_csv(str(savepath+'{}_Real.csv'.format(savefilename)),header=None,index=False)
 
-    if plot_figs:
+    if plot_optical_props:
         plt.figure(figsize=(10,15))
         plt.subplot(2,1,1)
         plt.plot(WL[0:220],MAC[0:220]),plt.xlim(300,750)
@@ -293,14 +294,28 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
         plt.xlabel('Wavelength',fontsize=16),plt.ylabel('K (dimensionless)',fontsize=16)
         plt.tight_layout()
 
+    if plot_pigment_MACs:
+        plt.figure(figsize=(12, 12))
+        plt.plot(WL, Ea1n, label='Chlorophyll a')
+        plt.plot(WL, Ea2n, label='Chlorophyll b')
+        plt.plot(WL, Ea3n, label='Secpndary carotenoids')
+        plt.plot(WL, Ea4n, label='Primary carotenoids')
+        plt.plot(WL, Ea5n, label='Purpurogallin')
+        plt.xlabel('Wavelengths nm')
+        plt.ylabel('In vivo mass absorption coefficient (m2/kg)')
+        plt.xlim(300, 750)
+        plt.ylim(0, 0.1)
+        plt.legend(loc='best')
+        plt.show()
+
         return k_list, real_list, MAC, data
 
 
 # NB pigment data is provided here in units of mg per cell
 k_list, real_list, MAC, data = bio_optical(
-        load_MAC= False,
+        load_MAC= True,
         apply_packaging_correction=True,
-        calc_MAC = True,
+        calc_MAC = False,
         calc_k = True,
         pig_mass = True,
         pig_frac = False,
@@ -318,5 +333,6 @@ k_list, real_list, MAC, data = bio_optical(
         savefiles = False,
         savepath = '/home/joe/Code/BioSNICAR_GO/',
         savefilename = "Alg_optics_1",
-        plot_figs = True)
+        plot_optical_props = True,
+        plot_pigment_MACs = True)
 
