@@ -89,16 +89,16 @@ rho_snw(1:nbr_lyr) = [300, 400, 500, 600, 700];
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
 % size, choose GeometricOptics
-Mie = 0;
-GeometricOptics = 1;
+Mie = 1;
+GeometricOptics = 0;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
 rds_snw = [400,400,400,400,400];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [5000,8000,10000,10000,10000]; 
-depth(1:nbr_lyr) = [5000,8000,10000,10000,10000];
+side_length(1:nbr_lyr) = [3000,4000,5000,8000,10000]; 
+depth(1:nbr_lyr) = [3000,4000,5000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
 nbr_aer = 11;
@@ -115,8 +115,8 @@ snw_stb1 = 'snw_alg_'; % name stub for snow algae
 
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 1
-algae_r = 6; % algae radius
-algae_l = 60; % algae length
+algae_r = 2; % algae radius
+algae_l = 40; % algae length
 glacier_algae1 = strcat(wrkdir2,stb1,num2str(algae_r),'_',num2str(algae_l),stb2); % create filename string
 
 % CHOOSE DIMENSIONS OF GLACIER ALGAE 2
@@ -149,7 +149,7 @@ mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
 mss_cnc_GRISdust(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [520000,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae1(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
 
@@ -260,43 +260,43 @@ else
     sub_tot_line = [sub1_tot,sub2_tot,sub3_tot,sub4_tot,sub5_tot];
     depths = [dz(1),dz(1)+dz(2),dz(1)+dz(2)+dz(3),dz(1)+dz(2)+dz(3)+dz(4), dz(1)+dz(2)+dz(3)+dz(4)+dz(5)];
 
-    figure(1);
+%     figure(1);
 
     % make a plot of spectrally-resolved albedo:
-    plot(wvl,albedo,'linewidth',2);
-    xlabel('Wavelength (\mum)','fontsize',20);
-    ylabel('Albedo','fontsize',20);
-    set(gca,'xtick',0:0.1:5,'fontsize',16);
-    set(gca,'ytick',0:0.1:1.0,'fontsize',16);
-    xlim([0.3 2.5])
-    ylim([0,1])
-    grid on;
-    hold on;
-
-    % plot subsurface light field
-    figure(2);
-    hold on
-    plot(wvl, sub1, 'DisplayName','0 - 0.3 cm');
-    plot(wvl, sub2','DisplayName','0.3 - 1.3 cm');
-    plot(wvl, sub3,'DisplayName','1.3 - 3.3 cm');
-    plot(wvl, sub4,'DisplayName','3.3 - 5.3 cm');
-    plot(wvl, sub5,'DisplayName','5.3 - 7.3 cm');
-    xlabel('Wavelength (\mum)','fontsize',20);
-    ylabel('Planar Intensity Wm-2','fontsize',20);
-    xlim([0.3 2.5]);
-    ylim([0 0.03]);
-    set(gca,'xtick',0:0.1:5,'fontsize',16);
-    set(gca,'ytick',0:0.01:0.1,'fontsize',16);
-    legend;
-
-    %plot total energy actinic flux against depth
-    figure(3);
-    plot(depths,sub_tot_line);
-    xlabel('Depth beneath surface (m)','fontsize',20);
-    ylabel('planar intensity (Wm-2)','fontsize',20);
-    set(gca,'xtick',0:0.01:0.1,'fontsize',16);
-    set(gca,'ytick',0:0.1:1,'fontsize',16);
-    hold on
+%     plot(wvl,albedo,'linewidth',2);
+%     xlabel('Wavelength (\mum)','fontsize',20);
+%     ylabel('Albedo','fontsize',20);
+%     set(gca,'xtick',0:0.1:5,'fontsize',16);
+%     set(gca,'ytick',0:0.1:1.0,'fontsize',16);
+%     xlim([0.3 2.5])
+%     ylim([0,1])
+%     grid on;
+%     hold on;
+% 
+%     % plot subsurface light field
+%     figure(2);
+%     hold on
+%     plot(wvl, sub1, 'DisplayName','0 - 0.3 cm');
+%     plot(wvl, sub2','DisplayName','0.3 - 1.3 cm');
+%     plot(wvl, sub3,'DisplayName','1.3 - 3.3 cm');
+%     plot(wvl, sub4,'DisplayName','3.3 - 5.3 cm');
+%     plot(wvl, sub5,'DisplayName','5.3 - 7.3 cm');
+%     xlabel('Wavelength (\mum)','fontsize',20);
+%     ylabel('Planar Intensity Wm-2','fontsize',20);
+%     xlim([0.3 2.5]);
+%     ylim([0 0.03]);
+%     set(gca,'xtick',0:0.1:5,'fontsize',16);
+%     set(gca,'ytick',0:0.01:0.1,'fontsize',16);
+%     legend;
+% 
+%     %plot total energy actinic flux against depth
+%     figure(3);
+%     plot(depths,sub_tot_line);
+%     xlabel('Depth beneath surface (m)','fontsize',20);
+%     ylabel('planar intensity (Wm-2)','fontsize',20);
+%     set(gca,'xtick',0:0.01:0.1,'fontsize',16);
+%     set(gca,'ytick',0:0.1:1,'fontsize',16);
+%     hold on
 
     
     "********* REPORTING BROADBAND ALBEDO ETC ******* "

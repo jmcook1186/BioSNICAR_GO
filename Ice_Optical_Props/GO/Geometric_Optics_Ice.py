@@ -54,6 +54,12 @@ user can define the range of side lengths and depths to be looped over.
 NOTE: The extinction coefficient in the current implementation is 2 for all size parameters 
 as assumed in the conventional geometric optics approximation.
 
+UPDATE March 2019: Now includes option to output a three-band version, with bands relevant for integrating
+BioSNICAR into MAR (modele atmospherique regionale). These bands are 300-799 nm, 800-1199nm, 1201-2500nm. The
+optical properties are averaged over these wavelength ranges and output as three floats to a separate optical
+property library: GO_files/Ice_Optical_Properties_3band. To use this option set ThreeBand to True in the functions
+calculate_optical_params() and netcdf_updater()
+
 """
 
 import numpy as np
@@ -64,9 +70,8 @@ from shutil import copyfile
 from netCDF4 import Dataset
 
 filepath = '/home/joe/Code/BioSNICAR_GO/GO_files/'
-plt.figure(1)
-plt.figure(2)
-plt.figure(3)
+filepath3Band = '/home/joe/Code/BioSNICAR_GO/GO_files/Ice_Optical_Properties_3band/' #save path for 3 band version
+
 
 def preprocess_RI():
     
@@ -170,7 +175,7 @@ def preprocess_RI():
 
 
 
-def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,report_dims = False):
+def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,report_dims = False, ThreeBand = False):
     
     SSA_list = []
     Assy_list = []
@@ -325,7 +330,38 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
         Assy_list.append(g_tot)
         absXS_list.append(absXS)
         MAC_list.append(MAC)
-    
+
+    if ThreeBand:
+        Band1X = np.mean(X_list[0:49])
+        Band2X = np.mean(X_list[50:119])
+        Band3X = np.mean(X_list[120:249])
+        Band1Chi = np.mean(Chi_abs_list[0:49])
+        Band2Chi = np.mean(Chi_abs_list[50:119])
+        Band3Chi = np.mean(Chi_abs_list[120:249])
+        Band1SSA = np.mean(SSA_list[0:49])
+        Band2SSA = np.mean(SSA_list[50:119])
+        Band3SSA = np.mean(SSA_list[120:249])
+        Band1Assy = np.mean(Assy_list[0:49])
+        Band2Assy = np.mean(Assy_list[50:119])
+        Band3Assy = np.mean(Assy_list[120:249])
+        Band1absXS = np.mean(absXS_list[0:49])
+        Band2absXS = np.mean(absXS_list[50:119])
+        Band3absXS = np.mean(absXS_list[120:249])
+
+        ThreeBandAssy = [Band1Assy, Band2Assy, Band3Assy]
+        ThreeBandSSA = [Band1SSA, Band2SSA, Band3SSA]
+        ThreeBandX = [Band1X, Band2X, Band3X]
+        ThreeBandChi = [Band1Chi, Band2Chi, Band3Chi]
+        ThreeBandabsXS = [Band1absXS, Band2absXS, Band3absXS]
+        ThreeBandMAC = [np.mean(MAC_list[0:49]),np.mean(MAC_list[50:119]),np.mean(MAC_list[120:249])]
+
+    else:
+        ThreeBandX = 0
+        ThreeBandSSA = 0
+        ThreeBandChi = 0
+        ThreeBandAssy = 0
+        ThreeBandabsXS = 0
+
     if plots:
         plt.figure(1)    
         plt.plot(wavelengths,SSA_list),plt.ylabel('SSA'),plt.xlabel('Wavelength (um)'),plt.grid(b=None)
@@ -340,25 +376,45 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
         print('aspect ratio = ',ar)
         print('ice crystal volume = ', np.round(V*1e-12,2),' (cm^3)')
     
-    return Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length
+    return Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
+           ThreeBandChi, ThreeBandX, ThreeBandMAC
 
 
-def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length):
-    
-    template = str(filepath+'ice_geom_template.nc')
-    outfile = str(filepath+'ice_geom_{}_{}.nc'.format(str(side_length),str(depth)))
-    copyfile(template,outfile)
-    
-    icefile = Dataset(outfile,'r+')
-    icefile.variables['asm_prm'][:] = Assy_list
-    icefile.variables['ss_alb'][:] = SSA_list
-    icefile.variables['abs_xsc'][:] = absXS_list
-    icefile.variables['ext_cff_mss'][:] = MAC_list
-    icefile.variables['depth'][:]=depth
-    icefile.variables['side_length'][:] = side_length
-    icefile.variables['prt_dns'][:] = 914
-    icefile.close()
-    
+def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, absXS_list, MAC_list, depth, side_length, density, ThreeBandSSA,
+                    ThreeBandAssy, ThreeBandabsXS, ThreeBandChi, ThreeBandX, ThreeBandMAC, ThreeBand = False):
+
+    if ThreeBand:
+        filepathIN = filepath3Band
+        MAC_IN = ThreeBandMAC
+        absXS_IN = ThreeBandabsXS
+        SSA_IN = ThreeBandSSA
+        Assy_IN = ThreeBandAssy
+        Chi_IN = ThreeBandChi
+
+    else:
+        filepathIN = filepath
+        MAC_IN = np.squeeze(MAC_list)
+        absXS_IN = np.squeeze(absXS_list)
+        SSA_IN = np.squeeze(SSA_list)
+        Assy_IN = np.squeeze(Assy_list)
+        Chi_IN = np.squeeze(Chi_list)
+
+    icefile = pd.DataFrame()
+    icefile['asm_prm'] = Assy_IN
+    icefile['ss_alb'] = SSA_IN
+    icefile['ext_cff_mss'] = MAC_IN
+    icefile = icefile.to_xarray()
+    icefile.attrs['medium_type'] = 'air'
+    icefile.attrs['description'] = 'Optical properties for ice grain: hexagonal column of radius {}um and length {}um'.format(
+        str(r), str(depth))
+    icefile.attrs['psd'] = 'monodisperse'
+    icefile.attrs['radius_um'] = r
+    icefile.attrs['side_length_um'] = depth
+    icefile.attrs['density_kg_m3'] = density
+    icefile.attrs[
+        'origin'] = 'Optical properties derived from geometrical optics calculations'
+    icefile.to_netcdf(str(filepathIN + 'ice_wrn_{}_{}_3Band.nc'.format(str(side_length), str(depth))))
+
     return 
 
 ###############################################################################
@@ -366,7 +422,10 @@ def net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_l
 
 reals,imags,wavelengths = preprocess_RI()
 
-for side_length in np.arange(1000,10000,500):
-    for depth in np.arange(1000,10000,500):
-            Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length = calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,report_dims = False)
-            net_cdf_updater(filepath,Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length)
+for side_length in np.arange(10000,15000,500):
+    for depth in np.arange(10000,15000,500):
+            Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
+            ThreeBandChi, ThreeBandX, ThreeBandMAC = calc_optical_params(side_length,depth, reals,imags,wavelengths,plots=False,
+                                                           report_dims = False, ThreeBand = True)
+             net_cdf_updater(filepath,filepath3Band,Assy_list,SSA_list,absXS_list,MAC_list,depth, side_length, 917, ThreeBandSSA,
+                                 ThreeBandAssy, ThreeBandabsXS, ThreeBandChi, ThreeBandX, ThreeBandMAC, ThreeBand=True)

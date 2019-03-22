@@ -161,13 +161,12 @@ if (DIRECT == 1)
     load ./Mie_files/mlw_sfc_flx_frc_clr.txt;
     mlw_sfc_flx_frc_clr(find(mlw_sfc_flx_frc_clr==0))=1e-30;
     flx_slr = mlw_sfc_flx_frc_clr;
-
     % Summit Greenland, clear-sky:
     %load sas_Smm_sfc_flx_frc_clr.txt;
     %sas_Smm_sfc_flx_frc_clr(find(sas_Smm_sfc_flx_frc_clr==0))=1e-30;
     %flx_slr = sas_Smm_sfc_flx_frc_clr;
 
-    Fs(1:nbr_wvl,1) = flx_slr./(mu_not*pi);  % direct-beam incident flux
+    Fs(1:nbr_wvl,1) = flx_slr./(mu_not*pi)  % direct-beam incident flux
     Fd(1:nbr_wvl,1) = 0;                     % diffuse incident flux
 
 elseif (DIRECT == 0)
@@ -339,8 +338,7 @@ for n=1:nbr_lyr
     omega(:,n) = (1./tau(:,n)).*(omega_sum+ (omega_snw(:,n).*tau_snw(:,n)));
     g(:,n)     = (1./(tau(:,n).*omega(:,n))) .* (g_sum+ (g_snw(:,n).*omega_snw(:,n).*tau_snw(:,n)));
 end
-  
-  
+ 
 % Perform Delta-transformations, if called for
 if (DELTA == 1)
     g_star     = g./(1+g);
@@ -351,6 +349,7 @@ else
     omega_star = omega;
     tau_star   = tau;
 end;
+
 
 % Calculate total column optical depth
 % tau_clm(:,n) = total optical depth of layers above n, or optical
@@ -364,7 +363,6 @@ end
 % Boundary Condition: Upward (reflected) direct beam flux at lower model boundary
 % (Eq. 37)
 S_sfc = R_sfc.*mu_not.*exp(-(tau_clm(:,nbr_lyr)+tau_star(:,nbr_lyr))./mu_not).*pi.*Fs;
-
 
 % Apply 2-stream approximation technique (Toon et al., Table 1.)
 
@@ -392,6 +390,7 @@ elseif (APRX_TYP == 3)
     gamma4 = 1-gamma3;
     mu_one = 0.5;
 end;
+
 
 % Eq. 21 and 22
 lambda = sqrt(abs((gamma1.^2) - (gamma2.^2)));
@@ -478,9 +477,8 @@ for n=1:nbr_lyr
         C_pls_top(1:nbr_wvl,n) = 0.0;
         C_mns_top(1:nbr_wvl,n) = 0.0;
     end;
-      
+
 end
-  
 
 % Eq. 41-43
 for i=1:2*nbr_lyr
@@ -490,7 +488,8 @@ for i=1:2*nbr_lyr
         B(1:nbr_wvl,1) = e1(:,1);
         D(1:nbr_wvl,1) = -e2(:,1);
         E(1:nbr_wvl,1) = Fd(:)-C_mns_top(:,1);
-					  
+
+        
     elseif(i==2*nbr_lyr)
         A(:,i) = e1(:,nbr_lyr)-(R_sfc.*e3(:,nbr_lyr));
         B(:,i) = e2(:,nbr_lyr)-(R_sfc.*e4(:,nbr_lyr));
@@ -515,17 +514,19 @@ for i=1:2*nbr_lyr
     end;
 end
 
-
+ 
 % Eq. 45
 AS(1:nbr_wvl,2*nbr_lyr) = A(:,2*nbr_lyr)./B(:,2*nbr_lyr);
 DS(1:nbr_wvl,2*nbr_lyr) = E(:,2*nbr_lyr)./B(:,2*nbr_lyr);
-  
+
+
 % Eq. 46
 for i=(2*nbr_lyr-1):-1:1
     X(1:nbr_wvl,i) = 1./(B(:,i)-(D(:,i).*AS(:,i+1)));
     AS(:,i)        = A(:,i).*X(:,i);
     DS(:,i)        = (E(:,i)-(D(:,i).*DS(:,i+1))).*X(:,i);
 end
+
 
 % Eq. 47
 Y(1:nbr_wvl,1) = DS(:,1);
@@ -536,14 +537,12 @@ end;
 
 for n=1:nbr_lyr
     % Direct beam flux at the base of each layer (Eq. 50)
-    direct(1:nbr_wvl,n) = mu_not*pi*Fs.*exp(-(tau_clm(:,n)+tau_star(:,n))./mu_not);
-
+    direct(1:nbr_wvl,n) = mu_not*pi*Fs.*exp(-(tau_clm(:,n)+tau_star(:,n))./mu_not);    
     % Net flux (positive upward = F_up-F_down) at the base of each
     % layer (Eq. 48)
     F_net(1:nbr_wvl,n) = (Y(:,(2*n-1)).*(e1(:,n)-e3(:,n))) +...
         (Y(:,(2*n)).*(e2(:,n)-e4(:,n))) + ...
         C_pls_btm(:,n) - C_mns_btm(:,n) - direct(:,n);
-
     % Mean intensity at the base of each layer (Eq. 49):
     intensity(1:nbr_wvl,n) = (1/mu_one).*...
         ( Y(:,(2*n-1)).*(e1(:,n)+e3(:,n)) + ...
@@ -552,7 +551,8 @@ for n=1:nbr_lyr
   
     intensity(1:nbr_wvl,n) = intensity(1:nbr_wvl,n)./(4*pi);
 end
-  
+
+plot(F_net(:,2))
 
 % Upward flux at upper model boundary (Eq. 31):
 F_top_pls = (Y(:,1).*(exp(-lambda(:,1).*tau_star(:,1))+GAMMA(:,1))) + ...
