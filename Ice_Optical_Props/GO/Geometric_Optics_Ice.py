@@ -63,11 +63,9 @@ calculate_optical_params() and netcdf_updater()
 """
 
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
 from scipy import interpolate
-from shutil import copyfile
-from netCDF4 import Dataset
+import pandas as pd
 
 filepath = '/home/joe/Code/BioSNICAR_GO/GO_files/'
 filepath3Band = '/home/joe/Code/BioSNICAR_GO/GO_files/Ice_Optical_Properties_3band/' #save path for 3 band version
@@ -181,6 +179,7 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
     Assy_list = []
     absXS_list = []
     MAC_list = []
+    X_list = []
     
     V = 1.5*np.sqrt(3)*side_length**2*depth    # volume
     Area_total = 3 * side_length * (np.sqrt(3)*side_length+depth*2) #total surface area 
@@ -332,12 +331,9 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
         MAC_list.append(MAC)
 
     if ThreeBand:
-        Band1X = np.mean(X_list[0:49])
-        Band2X = np.mean(X_list[50:119])
-        Band3X = np.mean(X_list[120:249])
-        Band1Chi = np.mean(Chi_abs_list[0:49])
-        Band2Chi = np.mean(Chi_abs_list[50:119])
-        Band3Chi = np.mean(Chi_abs_list[120:249])
+        Band1MAC = np.mean(MAC_list[0:49])
+        Band2MAC = np.mean(MAC_list[50:119])
+        Band3MAC = np.mean(MAC_list[120:249])
         Band1SSA = np.mean(SSA_list[0:49])
         Band2SSA = np.mean(SSA_list[50:119])
         Band3SSA = np.mean(SSA_list[120:249])
@@ -350,15 +346,12 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
 
         ThreeBandAssy = [Band1Assy, Band2Assy, Band3Assy]
         ThreeBandSSA = [Band1SSA, Band2SSA, Band3SSA]
-        ThreeBandX = [Band1X, Band2X, Band3X]
-        ThreeBandChi = [Band1Chi, Band2Chi, Band3Chi]
         ThreeBandabsXS = [Band1absXS, Band2absXS, Band3absXS]
-        ThreeBandMAC = [np.mean(MAC_list[0:49]),np.mean(MAC_list[50:119]),np.mean(MAC_list[120:249])]
+        ThreeBandMAC = [Band1MAC,Band2MAC,Band3MAC]
 
     else:
-        ThreeBandX = 0
         ThreeBandSSA = 0
-        ThreeBandChi = 0
+        ThreeBandMAC = 0
         ThreeBandAssy = 0
         ThreeBandabsXS = 0
 
@@ -368,7 +361,7 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
         plt.figure(2)
         plt.plot(wavelengths,Assy_list),plt.ylabel('Assymetry Parameter'),plt.xlabel('Wavelength (um)'),plt.grid(b=None)
         plt.figure(3)
-        plt.plot(wavelengths,absXS_list),plt.ylabel('Absorption Cross Section'),plt.xlabel('Wavelength (um)'),plt.grid(b=None)
+        plt.plot(wavelengths,MAC_list),plt.ylabel('Mass Absorption Cross Section'),plt.xlabel('Wavelength (um)'),plt.grid(b=None)
     
     if report_dims:
         print('Width of hexagonal plane = ',np.round(diameter/10000,2),' (cm)')
@@ -376,28 +369,25 @@ def calc_optical_params(side_length,depth,reals,imags,wavelengths,plots=False,re
         print('aspect ratio = ',ar)
         print('ice crystal volume = ', np.round(V*1e-12,2),' (cm^3)')
     
-    return Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
-           ThreeBandChi, ThreeBandX, ThreeBandMAC
+    return Assy_list,SSA_list,MAC_list,depth,side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
+           ThreeBandMAC
 
 
-def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, absXS_list, MAC_list, depth, side_length, density, ThreeBandSSA,
-                    ThreeBandAssy, ThreeBandabsXS, ThreeBandChi, ThreeBandX, ThreeBandMAC, ThreeBand = False):
+def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, MAC_list, depth, side_length, density, ThreeBandSSA,
+                    ThreeBandAssy, ThreeBandMAC, ThreeBand = False):
 
     if ThreeBand:
         filepathIN = filepath3Band
         MAC_IN = ThreeBandMAC
-        absXS_IN = ThreeBandabsXS
         SSA_IN = ThreeBandSSA
         Assy_IN = ThreeBandAssy
-        Chi_IN = ThreeBandChi
 
     else:
         filepathIN = filepath
         MAC_IN = np.squeeze(MAC_list)
-        absXS_IN = np.squeeze(absXS_list)
         SSA_IN = np.squeeze(SSA_list)
         Assy_IN = np.squeeze(Assy_list)
-        Chi_IN = np.squeeze(Chi_list)
+
 
     icefile = pd.DataFrame()
     icefile['asm_prm'] = Assy_IN
@@ -405,10 +395,9 @@ def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, absXS_list, MAC
     icefile['ext_cff_mss'] = MAC_IN
     icefile = icefile.to_xarray()
     icefile.attrs['medium_type'] = 'air'
-    icefile.attrs['description'] = 'Optical properties for ice grain: hexagonal column of radius {}um and length {}um'.format(
-        str(r), str(depth))
+    icefile.attrs['description'] = 'Optical properties for ice grain: hexagonal column of side length {}um and length {}um'.format(
+        str(side_length), str(depth))
     icefile.attrs['psd'] = 'monodisperse'
-    icefile.attrs['radius_um'] = r
     icefile.attrs['side_length_um'] = depth
     icefile.attrs['density_kg_m3'] = density
     icefile.attrs[
@@ -422,10 +411,10 @@ def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, absXS_list, MAC
 
 reals,imags,wavelengths = preprocess_RI()
 
-for side_length in np.arange(10000,15000,500):
-    for depth in np.arange(10000,15000,500):
-            Assy_list,SSA_list,absXS_list,MAC_list,depth,side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
-            ThreeBandChi, ThreeBandX, ThreeBandMAC = calc_optical_params(side_length,depth, reals,imags,wavelengths,plots=False,
+for side_length in np.arange(1000,15000,500):
+    for depth in np.arange(1000,15000,500):
+        Assy_list, SSA_list, MAC_list, depth, side_length, ThreeBandSSA, ThreeBandAssy, ThreeBandabsXS, \
+        ThreeBandMAC = calc_optical_params(side_length,depth, reals,imags,wavelengths,plots=False,
                                                            report_dims = False, ThreeBand = True)
-             net_cdf_updater(filepath,filepath3Band,Assy_list,SSA_list,absXS_list,MAC_list,depth, side_length, 917, ThreeBandSSA,
-                                 ThreeBandAssy, ThreeBandabsXS, ThreeBandChi, ThreeBandX, ThreeBandMAC, ThreeBand=True)
+        net_cdf_updater(filepath,filepath3Band,Assy_list,SSA_list,MAC_list, depth, side_length, 917,
+                       ThreeBandSSA, ThreeBandAssy, ThreeBandMAC, ThreeBand=True)
