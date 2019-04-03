@@ -21,3 +21,6 @@ This model is in active development and is changing rapidly. We provide free and
 Cook, J. M., Tedstone, A. J., Williamson, C., McCutcheon, J., Hodson, A. J., Dayal, A., Skiles, M., Hofer, S., Bryant, R., McAree, O., McGonigle, A., Ryan, J., Anesio, A. M., Irvine-Fynn, T. D. L., Hubbard, A., Hanna, E., Flanner, M., Mayanna, S., Benning, L. G., van As, D., Yallop, M., McQuaid, J., Gribbin, T., and Tranter, M.: Glacier algae accelerate melt rates on the western Greenland Ice Sheet, The Cryosphere Discuss., https://doi.org/10.5194/tc-2019-58, in review, 2019.
  
 Collaboration requests very welcome: please contact joe.cook@sheffield.ac.uk
+
+# Development
+The main scripts for BioSNICAR_GO are written for Matlab because the early development began with adaptations to some legacy Matlab code. I am currently working on translating the entire code base into Python to overcome the reliance on proprietary software.
