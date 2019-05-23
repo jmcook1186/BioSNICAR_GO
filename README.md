@@ -5,6 +5,9 @@ The model is a two stream radiative transfer model that predicts the albedo of a
 
 BioSNICAR_GO also offers the option to incorporate algae as a light absorbing impurity, importantly either in the form of snow algae and mesotaenium bergrennii (small, spherical algae approximating chloromonas, chlamydomonas, chainomonas) modelled using mie theory, or Ancylonema (large (10s - 100s microns in length), long chains of cells approximated as cylinders after Lee and Pilon, 2013) modelled using geometrical optics. The mass absorption coefficient for glacier algae has been determined empirically and the model enables the user to choose between providing an empirical MAC and empirically derived pigment abundance (as absolute mass or mass fraction) or alternatively using theoretical values. This functionality, combined with the geometric optics option for the ice matrix makes BioSNICAR_GO applicable to bare glacier ice surfaces as well as wet and dry snowpacks - a significant step forwards from the original BiOSNICAR model published in Cook et al (2017). The model currently includes options for 2 glacier algae of different user-defined dimensions and one snow algae.
 
+# Model Structure
+![BioSNICAR_GO model structure](https://github.com/jmcook1186/BioSNICAR_GO/model_structure.jpg "BioSNICAR_GO model structure")
+
 # In this Repo
 ## Scripts
 This repository contains the codes and datasets required to run the BioSNICAR_GO model. For geometric optics the optical properties of ice crystals are calculated using the python script 'Geometric_Optic_Ice.py'. The glacier algae optical properties are calculated using the python script 'Algae_GO.py'. This populates the working directory with netCDF files containing the relevant optical properties required by BioSNICAR_GO. The main BIOSNICAR_GO function is provided in the matlab script snicar8d_geom_optics.m and snicar_8d_mie.m. These are called from the driver script BioSNICAR_GO_driver.m.
