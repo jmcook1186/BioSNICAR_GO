@@ -15,7 +15,7 @@
 % scattering coefficient (ScaXCmass), mass absorption coefficient
 % (AbsXCmass)
 
-function [ExtXCmass ssa extinction scattering absorption asymmetry] = MieMineralFunc(WL, d, CellDensity,KK)
+function [ExtXCmass ssa extinction scattering absorption asymmetry] = MieMineralFunc(WL, d, CellDensity, KK)
 
     %define cell dimensions
     CellVol = 4/3* pi * ((d*1e-6)/2)^3; % cell vol m3
@@ -36,6 +36,7 @@ function [ExtXCmass ssa extinction scattering absorption asymmetry] = MieMineral
         asymmetry(i) = asy;
         q_ratio(i) = qratio;
         ssa(i) = qsca/qext;
+        
     end
 
     ExtXC = (extinction);

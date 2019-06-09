@@ -253,7 +253,7 @@ fl_in10 = strcat(wrkdir,fl_GRISdust3);
 fl_in11= strcat(wrkdir,fl_GRISdust4);
 fl_in12 = strcat(fl_snw_alg); % JC EDIT
 fl_in13 = strcat(fl_glacier_algae1); % JC EDIT
-fl_in14 = strcat(fl_glacier_algae2); % JC EDIT
+fl_in11 = strcat(fl_glacier_algae2); % JC EDIT
 
 
 omega_aer(:,1)       = ncread(fl_in1,'ss_alb');
@@ -301,18 +301,6 @@ omega_aer(:,11)       = ncread(fl_in11,'ss_alb');   % JC EDIT
 g_aer(:,11)           = ncread(fl_in11,'asm_prm');   % JC EDIT
 ext_cff_mss_aer(:,11) = ncread(fl_in11,'ext_cff_mss');   % JC EDIT
 
-omega_aer(:,12)       = ncread(fl_in12,'ss_alb');   % JC EDIT
-g_aer(:,12)           = ncread(fl_in12,'asm_prm');   % JC EDIT
-ext_cff_mss_aer(:,12) = ncread(fl_in12,'ext_cff_mss');   % JC EDIT
-
-omega_aer(:,13)       = ncread(fl_in13,'ss_alb');   % JC EDIT
-g_aer(:,13)           = ncread(fl_in13,'asm_prm');   % JC EDIT
-ext_cff_mss_aer(:,13) = ncread(fl_in13,'ext_cff_mss');   % JC EDIT
-
-omega_aer(:,14)       = ncread(fl_in14,'ss_alb');   % JC EDIT
-g_aer(:,14)           = ncread(fl_in14,'asm_prm');   % JC EDIT
-ext_cff_mss_aer(:,14) = ncread(fl_in14,'ext_cff_mss');   % JC EDIT
-
 
 % Set aerosol concentration matrix:
 mss_cnc_aer(1:nbr_lyr,1) = mss_cnc_sot1;
@@ -322,13 +310,12 @@ mss_cnc_aer(1:nbr_lyr,4) = mss_cnc_dst2;
 mss_cnc_aer(1:nbr_lyr,5) = mss_cnc_dst3;
 mss_cnc_aer(1:nbr_lyr,6) = mss_cnc_dst4;
 mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_ash1;
-mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdust1; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_GRISdust2; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_GRISdust3; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_GRISdust4; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,12) = mss_cnc_snw_alg; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,13) = mss_cnc_glacier_algae1; %JC EDIT
-mss_cnc_aer(1:nbr_lyr,14) = mss_cnc_glacier_algae2; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdust; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_snw_alg; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_glacier_algae1; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_glacier_algae2; %JC EDIT
+
+
 
 
 % convert to units of kg/kg:

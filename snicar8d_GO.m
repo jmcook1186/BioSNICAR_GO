@@ -87,9 +87,9 @@ function data_out = snicar8d_GO(BND_TYP_IN, DIRECT_IN, APRX_TYP_IN, ...
                              mss_cnc_sot1_in, mss_cnc_sot2_in, ...
                              mss_cnc_dst1_in, mss_cnc_dst2_in, ...
                              mss_cnc_dst3_in, mss_cnc_dst4_in, ...
-                             mss_cnc_ash1_in,mss_cnc_GRISdust_in,mss_cnc_snw_alg_in, mss_cnc_glacier_algae1_in, mss_cnc_glacier_algae2_in, fl_sot1_in, fl_sot2_in, ...
+                             mss_cnc_ash1_in, mss_cnc_GRISdust1_in, mss_cnc_GRISdust2_in, mss_cnc_GRISdust3_in, mss_cnc_GRISdust4_in, mss_cnc_snw_alg_in, mss_cnc_glacier_algae1_in, mss_cnc_glacier_algae2_in, fl_sot1_in, fl_sot2_in, ...
                              fl_dst1_in, fl_dst2_in, fl_dst3_in, fl_dst4_in, ...
-                             fl_ash1_in, fl_GRISdust_in, fl_snw_alg_in, fl_glacier_algae1_in, fl_glacier_algae2_in);
+                             fl_ash1_in, fl_GRISdust1_in, fl_GRISdust2_in, fl_GRISdust3_in, fl_GRISdust4_in, fl_snw_alg_in, fl_glacier_algae1_in, fl_glacier_algae2_in);
 
     
 
@@ -119,7 +119,10 @@ mss_cnc_dst2  = mss_cnc_dst2_in;
 mss_cnc_dst3  = mss_cnc_dst3_in;  
 mss_cnc_dst4  = mss_cnc_dst4_in; 
 mss_cnc_ash1  = mss_cnc_ash1_in;  
-mss_cnc_GRISdust = mss_cnc_GRISdust_in; %JC EDIT
+mss_cnc_GRISdust1 = mss_cnc_GRISdust1_in; % JC EDIT
+mss_cnc_GRISdust2 = mss_cnc_GRISdust2_in; % JC EDIT
+mss_cnc_GRISdust3 = mss_cnc_GRISdust3_in; % JC EDIT
+mss_cnc_GRISdust4 = mss_cnc_GRISdust4_in; % JC EDIT
 mss_cnc_snw_alg  = mss_cnc_snw_alg_in;   % JC EDIT
 mss_cnc_glacier_algae1 = mss_cnc_glacier_algae1_in; % JC EDIT
 mss_cnc_glacier_algae2 = mss_cnc_glacier_algae2_in; % JC EDIT
@@ -132,10 +135,13 @@ fl_dst2       = fl_dst2_in;
 fl_dst3       = fl_dst3_in;
 fl_dst4       = fl_dst4_in;
 fl_ash1       = fl_ash1_in;
-fl_GRISdust   = fl_GRISdust_in;
+fl_GRISdust1   = fl_GRISdust1_in; %JC EDIT
+fl_GRISdust2   = fl_GRISdust2_in; %JC EDIT
+fl_GRISdust3   = fl_GRISdust3_in; %JC EDIT
+fl_GRISdust4   = fl_GRISdust4_in; %JC EDIT
 fl_snw_alg    = fl_snw_alg_in;   % JC EDIT
 fl_glacier_algae1 = fl_glacier_algae1_in; % JC EDIT
-fl_glacier_algae2 = fl_glacier_algae2_in; % JC EDIT
+fl_glacier_algae2 = fl_glacier_algae2_in; %JC EDIT
 
 % Set snow Mie directory based on band number (and direct or
 % diffuse flux):
@@ -274,6 +280,7 @@ end
 
 
 % Read Mie aerosol parameters (layer-independent)
+% Read Mie aerosol parameters (layer-independent)
 fl_in1 = strcat(wrkdir,fl_sot1);
 fl_in2 = strcat(wrkdir,fl_sot2);
 fl_in3 = strcat(wrkdir,fl_dst1);
@@ -281,10 +288,13 @@ fl_in4 = strcat(wrkdir,fl_dst2);
 fl_in5 = strcat(wrkdir,fl_dst3);
 fl_in6 = strcat(wrkdir,fl_dst4);
 fl_in7 = strcat(wrkdir,fl_ash1);
-fl_in8 = strcat(wrkdir,fl_GRISdust); %JC EDIT
-fl_in9 = strcat(fl_snw_alg); % JC EDIT
-fl_in10 = strcat(fl_glacier_algae1); % JC EDIT
-fl_in11 = strcat(fl_glacier_algae2); % JCEDIT
+fl_in8 = strcat(wrkdir,fl_GRISdust1);
+fl_in9 = strcat(wrkdir,fl_GRISdust2);
+fl_in10 = strcat(wrkdir,fl_GRISdust3);
+fl_in11= strcat(wrkdir,fl_GRISdust4);
+fl_in12 = strcat(fl_snw_alg); % JC EDIT
+fl_in13 = strcat(fl_glacier_algae1); % JC EDIT
+fl_in14 = strcat(fl_glacier_algae2); % JC EDIT
 
 omega_aer(:,1)       = ncread(fl_in1,'ss_alb');
 g_aer(:,1)           = ncread(fl_in1,'asm_prm');
@@ -331,6 +341,17 @@ omega_aer(:,11)       = ncread(fl_in11,'ss_alb');   % JC EDIT
 g_aer(:,11)           = ncread(fl_in11,'asm_prm');   % JC EDIT
 ext_cff_mss_aer(:,11) = ncread(fl_in11,'ext_cff_mss');   % JC EDIT
 
+omega_aer(:,12)       = ncread(fl_in12,'ss_alb');   % JC EDIT
+g_aer(:,12)           = ncread(fl_in12,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,12) = ncread(fl_in12,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,13)       = ncread(fl_in13,'ss_alb');   % JC EDIT
+g_aer(:,13)           = ncread(fl_in13,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,13) = ncread(fl_in13,'ext_cff_mss');   % JC EDIT
+
+omega_aer(:,14)       = ncread(fl_in14,'ss_alb');   % JC EDIT
+g_aer(:,14)           = ncread(fl_in14,'asm_prm');   % JC EDIT
+ext_cff_mss_aer(:,14) = ncread(fl_in14,'ext_cff_mss');   % JC EDIT
 
 
 % Set aerosol concentration matrix:
@@ -341,10 +362,13 @@ mss_cnc_aer(1:nbr_lyr,4) = mss_cnc_dst2;
 mss_cnc_aer(1:nbr_lyr,5) = mss_cnc_dst3;
 mss_cnc_aer(1:nbr_lyr,6) = mss_cnc_dst4;
 mss_cnc_aer(1:nbr_lyr,7) = mss_cnc_ash1;
-mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdust; %JC EDIT
-mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_snw_alg; % JC EDIT
-mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_glacier_algae1; %JC EDIT
-mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_glacier_algae2; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,8) = mss_cnc_GRISdust1; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,9) = mss_cnc_GRISdust2; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,10) = mss_cnc_GRISdust3; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,11) = mss_cnc_GRISdust4; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,12) = mss_cnc_snw_alg; % JC EDIT
+mss_cnc_aer(1:nbr_lyr,13) = mss_cnc_glacier_algae1; %JC EDIT
+mss_cnc_aer(1:nbr_lyr,14) = mss_cnc_glacier_algae2; %JC EDIT
 
 % convert to units of kg/kg:
 mss_cnc_aer = mss_cnc_aer.*10^-9;

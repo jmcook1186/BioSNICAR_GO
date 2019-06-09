@@ -140,7 +140,7 @@ for x = [1e6]
 % add mixing ratio of each particle per vertical layer or add 'x' to 
 % loop through values defined above
 
-mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
+mss_cnc_sot1(1:nbr_lyr)  =    [3000,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
 mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
 mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
