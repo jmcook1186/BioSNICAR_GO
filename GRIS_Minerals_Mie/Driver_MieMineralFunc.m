@@ -7,7 +7,7 @@ for d = 0.01:0.01:35
     WL = 0.305:0.01:5;
 
     %define cell dimensions
-    CellDensity = 1400; % density 1400 kg m-3
+    CellDensity = 4287; % density 1400 kg m-3
     [ExtXCmass ssa extinction scattering absorption asymmetry] = MieMineralFunc(WL, d, CellDensity,KK);
     
     % Each single scattering optical property has its own output table - here
@@ -24,12 +24,12 @@ end
 
 
 %write the optical property tables to individual csv files
-csvwrite('/home/joe/Desktop/ExtXCmass.csv',ExtXCmass_out)
-csvwrite('/home/joe/Desktop/extinction.csv',extinction_out)
-csvwrite('/home/joe/Desktop/scattering.csv',scattering_out)
-csvwrite('/home/joe/Desktop/absorption.csv',absorption_out)
-csvwrite('/home/joe/Desktop/ssa.csv',ssa_out)
-csvwrite('/home/joe/Desktop/assymetry.csv',asymmetry_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/ExtXCmass.csv',ExtXCmass_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/extinction.csv',extinction_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/scattering.csv',scattering_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/absorption.csv',absorption_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/ssa.csv',ssa_out)
+csvwrite('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/assymetry.csv',asymmetry_out)
 
 
 % bins
@@ -69,7 +69,7 @@ end
 % find the bulk refractive index by taking mean of all bins weighted by
 % frequency of occurrence in PSD
 
-Weights = csvread('/home/joe/Desktop/PSD_Weights.csv');
+Weights = csvread('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/PSD_Weights.csv');
 Weights = Weights/100;
 
 for i = 1:1:18

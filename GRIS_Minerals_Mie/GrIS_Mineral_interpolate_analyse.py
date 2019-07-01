@@ -13,20 +13,19 @@ from scipy import interpolate
 from scipy.signal import savgol_filter
 
 
-dftemp = pd.read_csv('/media/joe/C38C-3252/GRIS_dust_K.csv')
-
-f = interpolate.interp1d(dftemp['WL'],dftemp['K'])
-WLnew = np.arange(0.35,2.5,0.001)
+dftemp = pd.read_csv('/home/joe/Code/BioSNICAR_GO/GRIS_Minerals_Mie/GRIS_dust_K.csv')
+f = interpolate.interp1d(dftemp['WL'],dftemp['k'],fill_value='extrapolate')
+WLnew = np.arange(0.305,4.995,0.01)
 Knew = f(WLnew)
 
-Ksmooth = savgol_filter(Knew, 101, 3) # window size 51, polynomial order 3
+Ksmooth = savgol_filter(Knew, 11, 3) # window size 51, polynomial order 3
 
 df = pd.DataFrame()
 df['WL'] = WLnew
-df['K'] = Ksmooth
+df['k'] = Ksmooth
 
 plt.figure(figsize=(6,4))
-plt.plot(df['WL'],df['K']),plt.xlabel('Wavelength (microns)',fontsize=16),plt.ylabel('k',fontsize=16)
+plt.plot(df['WL'],df['k']),plt.xlabel('Wavelength (microns)',fontsize=16),plt.ylabel('k',fontsize=16)
 plt.xticks(fontsize=16),plt.yticks(fontsize=16)
 plt.savefig('/media/joe/C38C-3252/GrisMineral_k.jpg',dpi=300)
 

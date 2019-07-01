@@ -33,7 +33,8 @@
 % the BiOSNICAR mixing model (updated July 2018) from values measured in
 % the field on the Black and Bloom project (SW GrIS).
 
-%%%%%%%%%%  Input parameters: %%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%  Input parameters: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % BND_TYP:      Spectral grid (=1 for 470 bands. This is the
 %               only functional option in this distribution)
@@ -61,12 +62,11 @@
 % mss_cnc_X:    mass mixing ratio of aerosol X
 % fl_X:         name of file containing optical properties for aerosol X
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 clear;
 
-%%%%%%%%%%%%%%%%%%% USER DEFNED INPUTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% USER DEFNED INPUTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
@@ -75,16 +75,20 @@ APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
 
+
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
 dz       = [0.001 0.02 0.01 0.01 0.01];
 nbr_lyr  = length(dz);  % number of snow layers
+
 
 % REFLECTANCE OF SURFACE UNDERLYING SNOW:
 %   Value is applied to all wavelengths.
 R_sfc    = 0.15;
 
+
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
 rho_snw(1:nbr_lyr) = [400, 400, 400, 400, 400]; 
+
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
 % for small spheres choose Mie, for hexagonal plates or columns of any
@@ -104,8 +108,8 @@ depth(1:nbr_lyr) = [1000,3000,8000,8000,10000];
 nbr_aer = 14;
 
 
-%%%% ALGAL CELL CHARACTERISTICS %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% ALGAL CELL CHARACTERISTICS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set filename stubs
 stb1 = 'algae_geom_'; %name stub 1
@@ -142,25 +146,24 @@ for x = [1e6]
 
 mss_cnc_sot1(1:nbr_lyr)  =    [0,0,0,0,0];    % uncoated black carbon
 mss_cnc_sot2(1:nbr_lyr)  =    [0,0,0,0,0];    % coated black carbon
-mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 1
-mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 2
-mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 3
-mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % dust species 4
+mss_cnc_dst1(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 1
+mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 2
+mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 3
+mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
-mss_cnc_GRISdust1(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (B&B)
-mss_cnc_GRISdust2(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015)
-mss_cnc_GRISdust3(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015)
-mss_cnc_GRISdust4(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015)
+mss_cnc_GRISdust1(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Cook et al. 2019 empirical measurement)
+mss_cnc_GRISdust2(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: low hematite)
+mss_cnc_GRISdust3(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: median hematite)
+mss_cnc_GRISdust4(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: high hematite)
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae1(1:nbr_lyr) = [300000,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%% CALL FUNCTIONS AND PLOT OUTPUTS %%%%%%%%%%%%%%%%%%%%%%%
+
 
 % SET FILE NAMES CONTAINING OPTICAL PARAMETERS FOR ALL IMPURITIES:
 
@@ -265,20 +268,22 @@ else
     depths = [dz(1),dz(1)+dz(2),dz(1)+dz(2)+dz(3),dz(1)+dz(2)+dz(3)+dz(4), dz(1)+dz(2)+dz(3)+dz(4)+dz(5)];
 
 
-% 
     % make a plot of spectrally-resolved albedo:
     figure(1)
-    plot(wvl,albedo,'linewidth',2);
+    plot(wvl,albedo,'--k','linewidth',1);
     xlabel('Wavelength (\mum)','fontsize',20);
     ylabel('Albedo','fontsize',20);
     set(gca,'xtick',0:0.1:5,'fontsize',16);
     set(gca,'ytick',0:0.1:1.0,'fontsize',16);
-    xlim([0.3 2.5])
+    xlim([0.35 2.5])
     ylim([0,1])
     grid on;
     hold on
 
-    % plot subsurface light field
+% %%%%%%%%%%%%%%%% Optional plots: deactivated by default %%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%% Uncomment block to activate %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%     plot subsurface light field
 %     figure(2);
 %     hold on
 %     plot(wvl, sub1, 'DisplayName','0 - 0.3 cm');
@@ -305,9 +310,8 @@ else
 %     set(gca,'ytick',0:0.1:1,'fontsize',16);
 %     hold on
 
-    
-    "********* REPORTING BROADBAND ALBEDO ETC ******* "
-    % uncomment to print values to command window
+%%%%%%%%%%%%%%%%%%% REPORT VALUES TO CONSOLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% DELETE SEMICOLONS TO REPORT VALUES %%%%%%%%%%%%%%%%%%%%%%%
 
     alb_slr % albedo over solar spectrum
     flx_abs_snw; % absorbed energy in the snowpack
@@ -318,8 +322,9 @@ else
     temp_grad = ((heat_rt(1) - heat_rt(end)))/snow_depth; % temperature gradient through snowpack
 
     if albedo(42) - albedo(38) > 0
-        "RED-EDGE DETECTED"
+        "RED-EDGE DETECTED" % report whether red edge signal is detected in spectral albedo
     end
     
+    albedo_change = 0.4156 - alb_slr
 end
 end
