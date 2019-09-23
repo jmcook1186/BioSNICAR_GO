@@ -75,11 +75,11 @@ filepath3Band = '/home/joe/Code/BioSNICAR_GO/Algal_Optical_Properties_3band/' #s
 def preprocess_RI():
     # load input files for real RI, imaginary RI, mass absorption coefficient. Set wavelength array.
     wavelengths = np.arange(0.305, 5, 0.01)  # 300 - 5000 nm in 10 nm steps
-    reals = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_Real.csv', header=None)
+    reals = pd.read_csv('/home/joe/Code/BioSNICAR_GO/snw_alg1_20_7_2019_Real.csv', header=None)
     reals = np.array(reals)
-    imags = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_KK.csv', header=None)
+    imags = pd.read_csv('/home/joe/Code/BioSNICAR_GO/snw_alg1_20_7_2019_KK.csv', header=None)
     imags = np.array(imags)
-    MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/Alg_optics_1_MAC.csv', names=['vals'], header=None, index_col=None)
+    MAC = pd.read_csv('/home/joe/Code/BioSNICAR_GO/snw_alg1_20_7_2019_MAC.csv', names=['vals'], header=None, index_col=None)
     MAC = np.array(MAC['vals'])
 
     return reals, imags, MAC, wavelengths
@@ -332,9 +332,9 @@ def net_cdf_updater(filepath,filepath3Band, Assy_list, SSA_list, MAC, depth, r, 
 reals, imags, MAC, wavelengths = preprocess_RI()
 
 Assy_list, SSA_list, absXS_list, MAC_list, depth, r, Chi_abs_list, Reff, X_list, ThreeBandabsXS,ThreeBandAssy, \
-ThreeBandChi, ThreeBandSSA, ThreeBandX = calc_optical_params(6, 60, reals, imags, wavelengths, plots=True, report_dims=True, ThreeBand=True)
+ThreeBandChi, ThreeBandSSA, ThreeBandX = calc_optical_params(6, 60, reals, imags, wavelengths, plots=True, report_dims=True, ThreeBand=False)
 
-net_cdf_updater(filepath, filepath3Band, Assy_list, SSA_list, MAC, depth, r, 1400, ThreeBand=True)
+#net_cdf_updater(filepath, filepath3Band, Assy_list, SSA_list, MAC, depth, r, 1400, ThreeBand=False)
 
 # to interate over cell dimensions:
 

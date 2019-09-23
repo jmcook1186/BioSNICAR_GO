@@ -70,14 +70,14 @@ clear;
 
 % RADIATIVE TRANSFER CONFIGURATION:
 BND_TYP  = 1;        % 1= 470 spectral bands
-DIRECT   = 1;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
+DIRECT   = 0;        % 1= Direct-beam incident flux, 0= Diffuse incident flux
 APRX_TYP = 1;        % 1= Eddington, 2= Quadrature, 3= Hemispheric Mean
 DELTA    = 1;        % 1= Apply Delta approximation, 0= No delta
 coszen   = 0.57;     % if DIRECT give cosine of solar zenith angle 
 
 
 % THICKNESSES OF EACH VERTICAL LAYER(array) (units: meters):
-dz       = [0.001 0.02 0.01 0.01 0.01];
+dz       = [0.001 0.01 0.01 0.01 0.01];
 nbr_lyr  = length(dz);  % number of snow layers
 
 
@@ -87,7 +87,7 @@ R_sfc    = 0.15;
 
 
 % DENSITY OF EACH VERTICAL LAYER (units: kg/m3)
-rho_snw(1:nbr_lyr) = [400, 400, 400, 400, 400]; 
+rho_snw(1:nbr_lyr) = [500, 500, 600, 600, 600]; 
 
 
 % CHOOSE METHOD FOR DETERMINING OPTICAL PROPERTIES OF ICE GRAINS
@@ -98,14 +98,14 @@ GeometricOptics = 1;
 
 %SET ICE GRAIN DIMENSIONS
 % if using Mie optical properties, set rds_snw
-rds_snw = [400,400,400,400,400];
+rds_snw = [1000,1000,1000,1000,1000];
 
 % if using GeometricOptics, set side_length and depth
-side_length(1:nbr_lyr) = [1000,3000,8000,8000,10000]; 
-depth(1:nbr_lyr) = [1000,3000,8000,8000,10000];
+side_length(1:nbr_lyr) = [3000,4000,5000,8000,10000]; 
+depth(1:nbr_lyr) = [3000,4000,5000,8000,10000];
 
 % TOTAL NUMBER OF AEROSOL SPECIES IN MODEL
-nbr_aer = 14;
+nbr_aer = 16;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,8 +137,9 @@ snw_alg = strcat(wrkdir2,snw_stb1,num2str(snw_algae_r),stb2); % create filename 
 
 % LOOP FOR LAP MASS MIXING RATIOS IN ICE BY SETTING RANGE OF X'S 
 % (REMOVE X AND USE SPECIFIC VALUES FOR SINGLE RUNS)
+result=[]
 
-for x = [1e6]
+for x = [0 10000 100000 342000 349000 500000 519000 646000 800000 1000000]
     
 % PARTICLE MASS MIXING RATIOS (units: ng(species)/g(ice), or ppb)
 % add mixing ratio of each particle per vertical layer or add 'x' to 
@@ -151,19 +152,19 @@ mss_cnc_dst2(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 2
 mss_cnc_dst3(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 3
 mss_cnc_dst4(1:nbr_lyr)  =    [0,0,0,0,0];    % global average dust 4
 mss_cnc_ash1(1:nbr_lyr)  =    [0,0,0,0,0];    % volcanic ash species 1
-mss_cnc_GRISdust1(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Cook et al. 2019 empirical measurement)
-mss_cnc_GRISdust2(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: low hematite)
-mss_cnc_GRISdust3(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: median hematite)
-mss_cnc_GRISdust4(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Polashenki2015: high hematite)
+mss_cnc_GRISdust1(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 1 (Cook et al. 2019 "mean")
+mss_cnc_GRISdust2(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 2 (Cook et al. 2019 HIGH)
+mss_cnc_GRISdust3(1:nbr_lyr) = [0,0,0,0,0];    % GRIS dust 3 (Cook et al. 2019 LOW)
+mss_cnc_GRISdustP1(1:nbr_lyr) = [0,0,0,0,0];  % GRIS dust 1 (Polashenki2015: low hematite)
+mss_cnc_GRISdustP2(1:nbr_lyr) = [0,0,0,0,0];  % GRIS dust 1 (Polashenki2015: median hematite)
+mss_cnc_GRISdustP3(1:nbr_lyr) = [x,0,0,0,0];  % GRIS dust 1 (Polashenki2015: median hematite)
 mss_cnc_snw_alg(1:nbr_lyr)  = [0,0,0,0,0];    % Snow Algae (spherical, C nivalis)
-mss_cnc_glacier_algae1(1:nbr_lyr) = [300000,0,0,0,0];    % glacier algae type1
+mss_cnc_glacier_algae1(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type1
 mss_cnc_glacier_algae2(1:nbr_lyr) = [0,0,0,0,0];    % glacier algae type2
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%% CALL FUNCTIONS AND PLOT OUTPUTS %%%%%%%%%%%%%%%%%%%%%%%
-
 
 % SET FILE NAMES CONTAINING OPTICAL PARAMETERS FOR ALL IMPURITIES:
 
@@ -174,10 +175,12 @@ fl_dst2  = 'aer_dst_bln_20060904_02.nc';
 fl_dst3  = 'aer_dst_bln_20060904_03.nc';
 fl_dst4  = 'aer_dst_bln_20060904_04.nc';
 fl_ash1  = 'volc_ash_mtsthelens_20081011.nc';
-fl_GRISdust1 = 'GRISdust_PSD.nc';
-fl_GRISdust2 = 'dust_greenland_L_20150308.nc';
-fl_GRISdust3 = 'dust_greenland_C_20150308.nc';
-fl_GRISdust4 = 'dust_greenland_H_20150308.nc';
+fl_GRISdust1 = 'dust_greenland_Cook_CENTRAL_20190911.nc';
+fl_GRISdust2 = 'dust_greenland_Cook_HIGH_20190911.nc';
+fl_GRISdust3 = 'dust_greenland_Cook_LOW_20190911.nc';
+fl_GRISdustP1 = 'dust_greenland_L_20150308.nc';
+fl_GRISdustP2 = 'dust_greenland_C_20150308.nc';
+fl_GRISdustP3 = 'dust_greenland_H_20150308.nc';
 fl_snw_alg  = snw_alg; % snow algae (c nivalis)
 fl_glacier_algae1 = glacier_algae1; % Glacier algae
 fl_glacier_algae2 = glacier_algae2; % Glacier algae
@@ -203,8 +206,8 @@ else
             dz, rho_snw, side_length, depth, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust1, mss_cnc_GRISdust2, mss_cnc_GRISdust3, mss_cnc_GRISdust4, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust1, fl_GRISdust2, fl_GRISdust3, fl_GRISdust4, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
+            mss_cnc_ash1, mss_cnc_GRISdust1, mss_cnc_GRISdust2, mss_cnc_GRISdust3, mss_cnc_GRISdustP1, mss_cnc_GRISdustP2, mss_cnc_GRISdustP3, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1,...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4, fl_ash1, fl_GRISdust1, fl_GRISdust2, fl_GRISdust3, fl_GRISdustP1, fl_GRISdustP2, fl_GRISdustP3, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
     
         for i = 1:1:length(dz)
             "******** REPORTING ICE GRAIN DIMENSIONS ********"
@@ -223,8 +226,8 @@ else
             dz, rho_snw, rds_snw, nbr_aer, mss_cnc_sot1, ...
             mss_cnc_sot2, mss_cnc_dst1, mss_cnc_dst2, ...
             mss_cnc_dst3, mss_cnc_dst4, ...
-            mss_cnc_ash1, mss_cnc_GRISdust1, mss_cnc_GRISdust2, mss_cnc_GRISdust3, mss_cnc_GRISdust4, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
-            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust1, fl_GRISdust2, fl_GRISdust3, fl_GRISdust4, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
+            mss_cnc_ash1, mss_cnc_GRISdust1, mss_cnc_GRISdust2, mss_cnc_GRISdust3, mss_cnc_GRISdustP1, mss_cnc_GRISdustP2, mss_cnc_GRISdustP3, mss_cnc_snw_alg, mss_cnc_glacier_algae1, mss_cnc_glacier_algae2, fl_sot1, ...
+            fl_sot2, fl_dst1, fl_dst2, fl_dst3, fl_dst4,fl_ash1, fl_GRISdust1, fl_GRISdust2, fl_GRISdust3, fl_GRISdustP1, fl_GRISdustP2, fl_GRISdustP3, fl_snw_alg, fl_glacier_algae1, fl_glacier_algae2);
     end
 
     % process input data:   
@@ -269,17 +272,22 @@ else
 
 
     % make a plot of spectrally-resolved albedo:
+
     figure(1)
-    plot(wvl,albedo,'--k','linewidth',1);
+    set(gcf,'units','normalized','position',[0 0 0.4 0.5])
+    plot(wvl,albedo,'linewidth',1);
     xlabel('Wavelength (\mum)','fontsize',20);
     ylabel('Albedo','fontsize',20);
     set(gca,'xtick',0:0.1:5,'fontsize',16);
     set(gca,'ytick',0:0.1:1.0,'fontsize',16);
-    xlim([0.35 2.5])
-    ylim([0,1])
-    grid on;
-    hold on
-
+    xlim([0.35 1.5])
+    ylim([0,0.55])
+    %legend
+    grid off;
+    hold on  
+    saveas(gcf,'/home/joe/Desktop/New_GrIS_Mineral_Optics/Simulation_Figures/dustP3.png')
+    
+    
 % %%%%%%%%%%%%%%%% Optional plots: deactivated by default %%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%% Uncomment block to activate %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -325,6 +333,6 @@ else
         "RED-EDGE DETECTED" % report whether red edge signal is detected in spectral albedo
     end
     
-    albedo_change = 0.4156 - alb_slr
+    result(end+1)=alb_slr
 end
 end

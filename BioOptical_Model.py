@@ -144,7 +144,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
                     cellf = float(cell)*1e-6
                     Ea4.append(cellf)
     
-        with open('/home/joe/Code/phenol_MAC.csv')as f:
+        with open('/home/joe/Code/BioSNICAR_GO/phenol_mac_correction.csv')as f:
             reader = csv.reader(f,delimiter=',')
             for row in reader:
                 for cell in row:
@@ -212,7 +212,7 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
             chlb_w = chlb * cell_dm_weight*1e-6
             ppro_w = ppro * cell_dm_weight*1e-6
             psyn_w = psyn * cell_dm_weight*1e-6
-            purp_w = purp * cell_weight_dm*1e-6
+            purp_w = purp * cell_dm_weight*1e-6
 
         elif pig_mass:
         # If data was provided in units of mg pigment/cell, read in from file.
@@ -313,26 +313,26 @@ def bio_optical(load_MAC = True, apply_packaging_correction=True, calc_MAC = Fal
 
 # NB pigment data is provided here in units of mg per cell
 k_list, real_list, MAC, data = bio_optical(
-        load_MAC= True,
+        load_MAC= False,
         apply_packaging_correction=True,
-        calc_MAC = False,
+        calc_MAC = True,
         calc_k = True,
-        pig_mass = True,
-        pig_frac = False,
+        pig_mass = False,
+        pig_frac = True,
         Pottier = False,
         Cook = True,
         cell_dm_weight= 1.89,
-        chla = 3.51E-9, 
-        chlb = 4.52E-9, 
-        ppro = 5.725E-9, 
-        psyn = 0, 
-        purp = 4E-8, 
+        chla = 0.028,
+        chlb = 0.013,
+        ppro = 0,
+        psyn = 0.063,
+        purp = 0,
         Xw = 0.8, 
         density= 1400, 
         nm = 1.4, 
-        savefiles = False,
+        savefiles = True,
         savepath = '/home/joe/Code/BioSNICAR_GO/',
-        savefilename = "Alg_optics_1",
+        savefilename = "snw_alg1_20_7_2019",
         plot_optical_props = True,
         plot_pigment_MACs = True)
 
