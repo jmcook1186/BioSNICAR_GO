@@ -1,4 +1,9 @@
 # BioSNICAR_GO
+
+## NOTE: THIS REPOSITORY IS DEPRECATED SINCE SPRING 2020. DEVELOPMENT HAS CONTINUED IN PYTHON AT THE FOLLOWING REPOSITORY.
+## www.github.com/jmcook1186/BioSNICAR_GO_PY
+## I STRONGLY SUGGEST MIGRATING TO THE MOST RECENT VERSION.
+
 An implementation of the BioSNICAR model offering the user a choice between determining ice optical properties using Mie scattering (good for fine snow grains that can be assumed spherical) or geometric optics (good for wet snow and ice). This also enables different grain shapes to be used - geometric optics for hexagonal plates and columns, Mie scattering for spheres. The original SNICAR model utilised mie scattering (Flanner et al., 2007) and an update in 2017 incorporated biological impurities (Cook et al., 2017).
 
 The model is a two stream radiative transfer model that predicts the albedo of an snow or ice with user-defined mass mixing ratios of a range of biological and non-biological particles. In GO mode, the optical properties of the ice grains themselves are calculated using a parameterisation of geometric optics calculations described by van Diedenhoven (2014) and the refractive indices are from Warren and Brandt (2008). In Mie mode the ice optical properties are calculated using Mie scatering codes using the same ic erefractive indiced. The radiative transfer codes are adapted from the original SNICAR model by Flanner (2007) which used Mie scattering to generate the ice optical properties. The rationale behind providing this verion is that geometic optics enables ice grains shaped as aritrarily large hexagonal plates and columns to be simulated, whereas Mie scattering applies to small spheres. The geometric optics approach is therefore better suited to wet snow or glacier ice, whereas Mie scattering is better for snow. 
